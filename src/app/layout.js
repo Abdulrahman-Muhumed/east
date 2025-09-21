@@ -9,9 +9,9 @@ export const metadata = {
   title: "East — Arabic Gum & Natural Resins",
   description: "Premium East African sourcing. Ethical trade, consistent grades.",
   icons: {
-    icon: '/east_image2.png.ico',             // or '/icon.png'
-    apple: '/east_image2.png.png',
-    shortcut: '/east_image2.png.ico',
+    icon: '/east_image2.png',             // or '/icon.png'
+    apple: '/east_image2.png',
+    shortcut: '/east_image2.png',
   },
 };
 
