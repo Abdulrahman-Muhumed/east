@@ -1,9 +1,5 @@
 import "./globals.css";
 import { brand } from "./config/brand";
-import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer";
-import ScrollTopButton from "./components/ui/ScrollTopButton";
-import { icons } from "lucide-react";
 
 export const metadata = {
   title: "East — Arabic Gum & Natural Resins",
@@ -24,10 +20,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body style={vars} className=" text-black ">
-        <Header />
-        <main className="min-h-dvh">{children}</main>
-        <ScrollTopButton />
-        <Footer />
+        {children}
       </body>
     </html>
   );

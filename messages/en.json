@@ -1,0 +1,295 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "products": "Products",
+    "quality": "Quality",
+    "contact": "Contact"
+  },
+  "home": { 
+    "hero": { "title": "Premium Arabic Gum from East Africa", "subtitle": "Direct-from-source • Consistent quality • Flexible quantities" },
+    "commitment": {
+      "titleA": "Built on",
+      "titleB": "Proof",
+      "titleC": ", not promises",
+      "desc": "Direct origin, lab-verified, globally compliant. Short supply chain, long-term trust.",
+      "metrics": {
+        "coa": { "k": "COA / Shipment", "v": "100%", "note": "Every lot documented" },
+        "trace": { "k": "Traceability", "v": "End-to-end", "note": "Origin → Delivery" },
+        "lead": { "k": "Lead Time", "v": "7–12 days", "note": "Predictable logistics" }
+      },
+      "features": {
+        "sourced": {
+          "title": "Sourced at Origin",
+          "body": "Direct relationships with producers ensure authenticity and consistency.",
+          "points": ["Single-origin lots", "Lot-level traceability"],
+          "cta": "Learn more"
+        },
+        "lab": {
+          "title": "Lab Verified",
+          "body": "COAs match independent labs; specs hold under scrutiny.",
+          "points": ["Micro & heavy metals", "Emulsification power"],
+          "cta": "Learn more"
+        },
+        "industry": {
+          "title": "Industry Ready",
+          "body": "Aligned to ISO/GMP workflows with documentation on tap.",
+          "points": ["COA / SDS ready", "Regulatory alignment"],
+          "cta": "Learn more"
+        }
+      }
+    },
+    "featured": {
+      "titleA": "Featured",
+      "titleB": "Resins",
+      "desc": "Tight specs. Clean aroma. Documentation ready.",
+      "tags": ["Food & Beverage", "Pharma", "Cosmetics", "Incense/Perfume"],
+      "chips": ["25kg bags", "MOQ 500kg", "Lead 7–12d"],
+      "ctaView": "View Details",
+      "ctaSample": "Request Sample",
+      "ariaPrev": "Previous product",
+      "ariaNext": "Next product"
+    },
+    "testimonials": {
+      "title": "Clients, on the record",
+      "desc": "Quiet consistency wins. A few words from teams who ship with us.",
+      "items": [
+        {
+          "quote": "Arabic Gum quality is relentlessly stable. COAs match our lab, batch after batch.",
+          "who": "Head of QA, Food Ingredients Inc."
+        },
+        {
+          "quote": "Documentation is tight; logistics were spot-on. Zero drama. Ideal vendor.",
+          "who": "Ops Lead, Pharma Solutions"
+        },
+        {
+          "quote": "Frankincense & Myrrh quality elevated our line. Customers noticed—so did sales.",
+          "who": "Founder, Artisan Cosmetics"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Need consistent, certified Arabic Gum & resins?",
+      "desc": "Ask for grade sheets, COA/SDS, and sample kits. We’ll match specs to your process.",
+      "btnContact": "Contact Sales",
+      "btnBrowse": "Browse Products"
+    }
+  },
+  "about": {
+    "hero": {
+      "kicker": "About EAST Hides & Investment",
+      "title": "A legacy of",
+      "lastWord": "Quality",
+      "subtitle": "Premium natural gum resins from East Africa — direct from origin, audit-ready quality, and precision logistics."
+    },
+    "stats": {
+      "establishedLabel": "Established In",
+      "establishedValue": "2012",
+      "happyCustomersLabel": "Happy Customers",
+      "happyCustomersValue": "25,000+",
+      "countriesServedLabel": "Countries Served",
+      "countriesServedValue": "50+"
+    },
+    "origin": {
+      "badge": "Origin",
+      "title": "Direct from Origin",
+      "body": "We partner closely with collectors and processors across Sudan, Somalia, and Ethiopia. Short supply lines. Lot-level documentation. Better economics for producers — and consistency for buyers."
+    },
+    "quality": {
+      "badge": "Quality",
+      "title": "Driven by Quality",
+      "body": "Every lot is screened, graded, and verified. COA/SDS on request. Our QA process is designed to pass audits and keep your supply chain predictable.",
+      "tiles": {
+        "labChecks": {
+          "title": "Lab Checks",
+          "body": "Moisture, impurities, optical, and solubility checks per lot."
+        },
+        "traceability": {
+          "title": "Traceability",
+          "body": "Lot-level docs link back to the producing region."
+        },
+        "consistency": {
+          "title": "Consistency",
+          "body": "Tight specs and repeatable results for scale."
+        }
+      }
+    },
+    "logistics": {
+      "badge": "Logistics",
+      "title": "Reliable Logistics",
+      "body": "From packing specs to Incoterms, we manage the path from farmgate to forwarder. Predictable lead times. Transparent communication. Fewer surprises.",
+      "items": {
+        "packingSpecSheets": "Packing Spec Sheets",
+        "incoterms": "Incoterms: EXW • FOB • CIF",
+        "freightCoordination": "Freight Coordination"
+      }
+    },
+    "principles": {
+      "title": "Our Guiding Principles",
+      "mission": {
+        "title": "Mission",
+        "body": "Deliver world-class natural gum resins through sustainable sourcing, tight specs, and lot-level documentation — empowering communities."
+      },
+      "vision": {
+        "title": "Vision",
+        "body": "Be the most dependable East African partner for Arabic Gum and allied resins, known for traceability, speed, and consistency."
+      },
+      "values": {
+        "title": "Values",
+        "list": [
+          "Integrity in sourcing & documentation",
+          "Partnerships with producers",
+          "Quality that stands up to audits"
+        ]
+      }
+    },
+    "company": {
+      "title": "A Glimpse of Our Company",
+      "body": "EAST is a premier exporter and trader of natural gum resins — Arabic Gum (grades 1 & 2), Myrrh, Opoponax, and Frankincense. With offices in Nairobi, Kenya, and Juba, South Sudan, we are committed to providing exceptional quality products globally.",
+      "cards": {
+        "ceo": { "label": "CEO", "value": "Mahdi Hassan Abdulkarim" },
+        "business": { "label": "Business", "value": "Export & Trade" },
+        "established": { "label": "Established", "value": "2015" },
+        "hq": { "label": "Headquarters", "value": "Nairobi, Kenya" }
+      }
+    },
+    "cta": {
+      "title": "Ready to start the journey with us?",
+      "body": "Request grade sheets, COA/SDS, and sample kits."
+    },
+    "buttons": {
+      "contactSales": "Contact Sales",
+      "browseProducts": "Browse Products"
+    }
+  },
+  "quality": {
+    "hero": {
+      "kicker": "EAST Hides & Investment Quality",
+      "title": "Quality & ",
+      "lastWord": "Standards",
+      "subtitle": "We partner directly with trusted collectors across Sudan, Somalia, and Ethiopia, ensuring every resin is harvested responsibly with respect to the environment and local communities.",
+      "rotating": ["partnership.", "quality.", "origin."]
+    },
+    "standards": {
+      "title": "Our Quality Pillars",
+      "items": [
+        { "title": "Grading Discipline", "desc": "Visual & size grading at origin with calibrated references; lot-level separation." },
+        { "title": "Moisture Control", "desc": "Target ranges per product; sealed storage; moisture re-check pre-export." },
+        { "title": "Impurity Limits", "desc": "Foreign matter thresholds set per spec; double-pass cleaning for sensitive grades." },
+        { "title": "Documentation", "desc": "COA/SDS on request, packing lists, HS codes, and traceability down to producing region." },
+        { "title": "Food Safety Mindset", "desc": "Hygienic handling, pest control routines, and container inspection checklists." },
+        { "title": "Regulatory Fit", "desc": "HS, country-of-origin proofs, and certificates aligned to destination requirements." }
+      ],
+      "pillLabel": "Quality Pillar"
+    },
+    "process": {
+      "title": "From Forest to Forwarder",
+      "steps": [
+        { "k": "S1", "t": "Source & Collect", "d": "Partner collectors harvest and pre-clean; initial visual grading." },
+        { "k": "S2", "t": "Sort & Grade", "d": "Size/color sorting, removal of impurities, preliminary moisture checks." },
+        { "k": "S3", "t": "Lab Verify", "d": "Moisture, insolubles/impurities, appearance; retain sample archived." },
+        { "k": "S4", "t": "Pack & Seal", "d": "Packaging per spec (25 kg / jumbo). Seals & labels applied; palletization." },
+        { "k": "S5", "t": "Docs & Audit", "d": "COA/SDS (if requested), packing list, invoice, HS code, origin proofs." },
+        { "k": "S6", "t": "Dispatch", "d": "Container inspection checklist; handoff to forwarder; status updates." }
+      ],
+      "stepLabel": "Step"
+    },
+    "assurance": {
+      "title": "Assurance Metrics",
+      "body": "We operate with documented processes, data logging, and corrective action loops to maintain consistency at scale.",
+      "metrics": [
+        { "label": "Spec Conformance", "value": "99.2%" },
+        { "label": "Average Lead Time", "value": "12 d" },
+        { "label": "Lot Traceability", "value": "100%" },
+        { "label": "Claims Rate (12m)", "value": "< 0.8%" }
+      ]
+    },
+    "certs": {
+      "title": "Compliance & Certificates",
+      "items": [
+        { "name": "Veterinary / Phytosanitary", "file": "/quality/cert-vet.pdf", "img": "/quality/qaulity1.png" },
+        { "name": "Chamber of Commerce", "file": "/quality/cert-coo.pdf", "img": "/quality/cert-qaulity1.png" },
+        { "name": "Analysis (COA)", "file": "/quality/coa-sample.pdf", "img": "/quality/qaulity1.png" }
+      ],
+      "view": "View"
+    },
+    "docsSampling": {
+      "badge": "Sampling & Documentation",
+      "title": "Representative Samples & Lot Docs",
+      "points": [
+        "Retain samples archived per lot; photographed and labeled.",
+        "COA/SDS provided on request; parameters aligned to buyer specs.",
+        "Packing specs, pallets, seals, and container checklist archived."
+      ]
+    },
+    "cta": {
+      "title": "Need grade sheets or QA alignment?",
+      "body": "Share your parameters; we’ll confirm feasibility and timelines.",
+      "browse": "Browse Products",
+      "contact": "Contact QA Team"
+    }
+  },
+  "Product": {
+    "breadcrumbs": {
+      "products": "Products"
+    },
+    "notFound": {
+      "title": "Product not found",
+      "desc": "We couldn’t find that product. Please check the URL or browse our catalog.",
+      "backToProducts": "Back to Products",
+      "goBack": "Go back"
+    },
+    "rfq": {
+      "title": "Request a Quote",
+      "desc": "Get pricing, lead time, and packing specs.",
+      "start": "Start RFQ",
+      "datasheet": "Datasheet",
+      "for": "Request a Quote for {{name}}",
+      "cancel": "Cancel",
+      "send": "Send Request",
+      "sending": "Sending…",
+      "sentTitle": "Request Sent!",
+      "sentDesc": "We’ve received your request and will get back to you shortly.",
+      "close": "Close"
+    },
+    "keyFacts": {
+      "origin": "Origin",
+      "packaging": "Packaging",
+      "moq": "MOQ",
+      "leadTime": "Lead Time",
+      "flexible": "Flexible",
+      "tbc": "TBC"
+    },
+    "tabs": {
+      "specs": "Specifications",
+      "apps": "Applications",
+      "noSpecs": "No specifications available.",
+      "appsLeadWithAreas": "Key industries and use-cases for this product:",
+      "appsLeadDefault": "Typical applications include:"
+    },
+    "related": {
+      "title": "Related Products",
+      "browseAll": "Browse all",
+      "viewProduct": "View Product"
+    },
+    "fields": {
+      "company": "Company",
+      "contactName": "Contact Name",
+      "email": "Email",
+      "destination": "Destination (Port/City)",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "incoterm": "Incoterm",
+      "message": "Message (optional)"
+    },
+    "applications": {
+      "Food & beverage": "Food & beverage",
+      "Pharmaceuticals": "Pharmaceuticals",
+      "Cosmetics": "Cosmetics",
+      "Industrial Use": "Industrial Use"
+    }
+  }
+
+}
+
+

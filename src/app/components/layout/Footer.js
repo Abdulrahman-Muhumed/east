@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "../../../../i18n/navigation"; // locale-aware Link
+import { brand } from "../../config/brand";
 
-const BLUE = "#1a2336"; // footer background
-const YELLOW = "#ffd028"; // brand accent
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -31,18 +29,22 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative text-white overflow-hidden" style={{ backgroundColor: BLUE }}>
+    <footer className="relative text-white overflow-hidden" style={{ backgroundColor: brand.colors.primary }}>
       {/* Background radial gradient with animation */}
-      <div className="absolute inset-0 z-0 opacity-40 animate-[pulse_6s_ease-in-out_infinite]" style={{ background: `radial-gradient(circle at 50% 120%, rgba(255,208,40,0.2), rgba(26,35,54,0.1) 40%)` }} />
-      
+      <div
+        className="absolute inset-0 z-0 opacity-40 animate-[pulse_6s_ease-in-out_infinite]"
+        style={{
+          background: `radial-gradient(circle at 50% 120%, rgba(255,208,40,0.2), rgba(26,35,54,0.1) 40%)`,
+        }}
+      />
+
       {/* Gradient hairline */}
       <div
         className="h-[3px] w-full"
-        style={{ background: `linear-gradient(90deg, ${YELLOW}, ${BLUE}, ${YELLOW})`, opacity: 0.9 }}
+        style={{ background: `linear-gradient(90deg, ${brand.colors.accent}, ${brand.colors.primary}, ${brand.colors.accent})`, opacity: 0.9 }}
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
         {/* Main grid */}
         <div className="py-16">
           <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-16">
@@ -51,21 +53,20 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <div
                   className="grid h-9 w-9 place-items-center rounded-xl transition-all duration-300 group-hover:rotate-12"
-                  style={{ background: YELLOW, boxShadow: "0 6px 18px rgba(255,208,40,.4)" }}
+                  style={{ background: brand.colors.accent, boxShadow: "0 6px 18px rgba(255,208,40,.4)" }}
                 >
                   <span className="block h-4 w-4 rounded-bl-[1.15rem] rounded-tr-[1.15rem] rounded-br-sm rounded-tl-sm bg-[#0b2a6b]" />
                 </div>
                 <div>
-                  <div className="text-base font-extrabold tracking-wide">East</div>
-                  <div className="text-xs text-white/60">Hides and Investment Company LTD</div>
+                  <div className="text-base font-extrabold tracking-wide">{brand.name}</div>
+                  <div className="text-xs text-white/60">{brand.slogan}</div>
                 </div>
               </div>
               <p className="mt-4 max-w-sm text-sm text-white/70 text-justify">
-                We source Arabic Gum, Myrrh, and Frankincense across East Africa,
-                maintaining strict lot-level documentation and consistent grade specs.
+                  {brand.des}
               </p>
 
-              {/* Socials with improved hover effect */}
+              {/* Socials */}
               <div className="mt-5 flex items-center gap-3">
                 {socials.map(({ label, href, icon: Icon }) => (
                   <Link
@@ -139,7 +140,7 @@ export default function Footer() {
         {/* Legal */}
         <div className="border-t border-white/10 py-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-white/60">
-            © {year} East — Hides and Investment Company LTD. All rights reserved.
+            © {year} {brand.name} — {brand.slogan}. All rights reserved.
           </p>
           <div className="flex gap-4 text-sm">
             <Link href="/terms" className="text-white/60 hover:text-white">
@@ -161,7 +162,7 @@ export default function Footer() {
 // --- Icons ---
 function ArrowRight() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M5 12h14" />
       <path d="M13 5l7 7-7 7" />
     </svg>
@@ -179,7 +180,7 @@ function WhatsAppIcon() {
 function LinkedInIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.86-3.04-1.87 0-2.16 1.46-2.16 2.96v5.65H9.32V9h3.41v1.56h.05c.48-.91 1.65-1.86 3.39-1.86 3.62 0 4.29 2.38 4.29 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.11 20.45H3.56V9h3.55v11.45z"/>
+      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.86-3.04-1.87 0-2.16 1.46-2.16 2.96v5.65H9.32V9h3.41v1.56h.05c.48-.91 1.65-1.86 3.39-1.86 3.62 0 4.29 2.38 4.29 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.11 20.45H3.56V9h3.55v11.45z" />
     </svg>
   );
 }
@@ -187,7 +188,7 @@ function LinkedInIcon() {
 function XIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-      <path d="M18.244 2H21.5l-7.59 8.67L22.5 22h-6.73l-5.27-6.4L4.4 22H1.14l8.11-9.27L1 2h6.85l4.76 5.78L18.24 2zm-2.36 18h1.96L8.2 4H6.18l9.706 16z"/>
+      <path d="M18.244 2H21.5l-7.59 8.67L22.5 22h-6.73l-5.27-6.4L4.4 22H1.14l8.11-9.27L1 2h6.85l4.76 5.78L18.24 2zm-2.36 18h1.96L8.2 4H6.18l9.706 16z" />
     </svg>
   );
 }

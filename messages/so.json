@@ -1,0 +1,307 @@
+{
+  "nav": {
+    "home": "Page-ka Hore",
+    "about": "Nagu Saabsan",
+    "products": "Alaabooyin",
+    "quality": "Tayo",
+    "contact": "Nala Soo Xiriir"
+  },
+  "home": {
+    "hero": {
+      "title": "Arabic Gum tayo sare leh oo Afrikada Bari",
+      "subtitle": "Si toos ah isha • Tayo joogto ah • Qadaro dabacsan"
+    },
+    "commitment": {
+      "titleA": "Waxaan ku dhisnay",
+      "titleB": "Caddeyn",
+      "titleC": ", ma aha ballanqaad",
+      "desc": "Asal toos ah, shaybaar lagu xaqiijiyay, waafaqsan caalami ahaan. Silsilad gaaban, kalsooni dheer.",
+      "metrics": {
+        "coa": { "k": "COA / Rar", "v": "100%", "note": "Lot kasta la duqeeyay" },
+        "trace": { "k": "Raad-raac", "v": "Dhammaad-ilaa-dhammaad", "note": "Asal → Gaarsiin" },
+        "lead": { "k": "Waqti Keenid", "v": "7–12 maalmood", "note": "Saadka la saadaalin karo" }
+      },
+      "features": {
+        "sourced": {
+          "title": "Laga soo xareeyay Asal",
+          "body": "Xiriir toos ah oo la leh soo-saareyaasha wuxuu hubiyaa saxnaan iyo joogteyn.",
+          "points": ["Lots hal-asal ah", "Raad-raac heer-lot"],
+          "cta": "Wax badan ogow"
+        },
+        "lab": {
+          "title": "Shaybaar lagu xaqiijiyay",
+          "body": "COA-yada waxay la mid yihiin shaybaarro madax-bannaan; qeexitaannadu way adkaysanayaan.",
+          "points": ["Micro & biraha culus", "Awood isku-qasid (emulsification)"],
+          "cta": "Wax badan ogow"
+        },
+        "industry": {
+          "title": "U diyaarsan Warshadaha",
+          "body": "Waafaqsan ISO/GMP; dukumiinti diyaar ah mar walba.",
+          "points": ["COA / SDS diyaar", "Waafaqsanaan sharciyeed"],
+          "cta": "Wax badan ogow"
+        }
+      }
+    },
+    "featured": {
+      "titleA": "Alaabooyin",
+      "titleB": "La Xushay",
+      "desc": "Qeexitaan adag. Caraf nadiif ah. Dukumiinti diyaar.",
+      "tags": ["Cunto & Cabitaan", "Daawo", "Isqurxin", "Uunsi/Caraf"],
+      "chips": ["Bac 25kg", "MOQ 500kg", "Keenid 7–12d"],
+      "ctaView": "Faahfaahin",
+      "ctaSample": "Codso Tijaabo",
+      "ariaPrev": "Alaabta hore",
+      "ariaNext": "Alaabta xigta"
+    },
+    "testimonials": {
+      "title": "Macaamiilku way caddeeyeen",
+      "desc": "Joogteyn deggan ayaa guuleysata. Qaar ka mid ah ereyada kooxaha nala shaqeeya.",
+      "items": [
+        {
+          "quote": "Tayada Arabic Gum aad bay u deggan tahay. COA-yadu waxay la mid yihiin shaybaarkeena lot kasta.",
+          "who": "Madaxa QA, Food Ingredients Inc."
+        },
+        {
+          "quote": "Dukumiintigu waa sax; saadka wuu hagaagsan yahay. Dhib la’aan. Iibiyaha ugu fiican.",
+          "who": "Hoggaamiyaha Hawlgalka, Pharma Solutions"
+        },
+        {
+          "quote": "Frankincense & Myrrh tayadoodu waxay kor u qaadday khadkeena. Macaamiishu way dareemeen—iwaannuna aragnay iib kordhay.",
+          "who": "Aasaasaha, Artisan Cosmetics"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ma u baahan tahay Arabic Gum & resins shahaado leh oo joogto ah?",
+      "desc": "Weydii warqadaha heerka, COA/SDS, iyo xirmooyinka tijaabada. Waxaan ku waafajin doonaa nidaamkaaga.",
+      "btnContact": "La xidhiidh Iibka",
+      "btnBrowse": "Eeg Alaabooyinka"
+    }
+  },
+  "about": {
+    "hero": {
+      "kicker": "Ku saabsan EAST Hides & Investment",
+      "title": "Dhaxal",
+      "lastWord": "Tayo",
+      "subtitle": "Xabag dabiici ah oo ka timaadda Bariga Afrika — toos uga imanaysa isha, tayo diyaar u ah kormeer, iyo saadka saxda ah."
+    },
+    "stats": {
+      "establishedLabel": "La aasaasay",
+      "establishedValue": "2012",
+      "happyCustomersLabel": "Macaamiil faraxsan",
+      "happyCustomersValue": "25,000+",
+      "countriesServedLabel": "Dalal aan u adeegnay",
+      "countriesServedValue": "50+"
+    },
+    "origin": {
+      "badge": "Asal",
+      "title": "Toos uga Isha",
+      "body": "Waxaan si dhow ula shaqaynaa ururiyeyaasha iyo warshadaynta ku kala sugan Suudaan, Soomaaliya, iyo Itoobiya. Khadad sahay oo gaagaaban. Dukumiintiyo heer-lot ah. Dhaqaale ka wanaagsan soo-saareyaasha — iyo joogteyn iibsadayaasha."
+    },
+    "quality": {
+      "badge": "Tayo",
+      "title": "Tayo ayaa na hago",
+      "body": "Lot kasta waxaa la baaraa, la kala saaraa, lana xaqiijiyaa. COA/SDS marka la codsado. Habka tayadeennu waxa uu u dhisan yahay inuu ka gudbo kormeerka oo uu ka dhigo silsiladda sahayda mid la saadaalin karo.",
+      "tiles": {
+        "labChecks": {
+          "title": "Hubin Shaybaar",
+          "body": "Qoyaanka, wasakhda, indho-qabadka, iyo milanka lot kasta."
+        },
+        "traceability": {
+          "title": "La-raacitaan",
+          "body": "Dukumiintiyada lot-ka waxay dib ugu xirmaan gobolka soo saarka."
+        },
+        "consistency": {
+          "title": "Joogteyn",
+          "body": "Tilmaamo adag iyo natiijooyin is-ku-celcelis ah oo miisaan leh."
+        }
+      }
+    },
+    "logistics": {
+      "badge": "Saadka",
+      "title": "Saadka La isku Haliyo",
+      "body": "Laga bilaabo qeexitaanka baakadaha ilaa Incoterms, waxaan maamulnaa waddada beerta ilaa forwarder-ka. Waqtiyo keenis la saadaalin karo. Isgaarsiin muuqata. Yaab yar.",
+      "items": {
+        "packingSpecSheets": "Xaashiyaha Qeexitaanka Baakadaha",
+        "incoterms": "Incoterms: EXW • FOB • CIF",
+        "freightCoordination": "Isku-duwidda Rarka"
+      }
+    },
+    "principles": {
+      "title": "Mabaadi'deenna Hanuuninta",
+      "mission": {
+        "title": "Hadaf",
+        "body": "Inaan gaarsiino xabag dabiici ah oo heer caalami ah iyadoo la adeegsanaayo soo-iibsasho waara, tilmaamo adag, iyo dukumiinti heer-lot ah — si bulshada loo xoojiyo."
+      },
+      "vision": {
+        "title": "Aragti",
+        "body": "Inaan noqono lammaanaha ugu lagu kalsoonaan karo ee Bariga Afrika ee Arabic Gum iyo resins-ka la xiriira, oo lagu yaqaanno la-raacitaan, xawaare, iyo joogteyn."
+      },
+      "values": {
+        "title": "Qiimayaal",
+        "list": [
+          "Daacadnimo ku saabsan soo-iibsiga & dukumiintiga",
+          "Wada-shaqayn la leh soo-saareyaasha",
+          "Tayo u adkaysata kormeer kasta"
+        ]
+      }
+    },
+    "company": {
+      "title": "Sawir Kooban oo Shirkaddeenna ah",
+      "body": "EAST waa dhoofiye iyo ganacsade hormuud ah oo xabag dabiici ah — Arabic Gum (darajooyinka 1 & 2), Myrrh, Opoponax, iyo Frankincense. Annagoo xafiisyo ku leh Nairobi, Kenya iyo Juba, Koonfurta Suudaan, waxaan u heellan nahay inaan bixino alaabo tayo sare leh adduunka oo dhan.",
+      "cards": {
+        "ceo": {
+          "label": "Maamulaha Guud",
+          "value": "Mahdi Hassan Abdulkarim"
+        },
+        "business": {
+          "label": "Ganacsi",
+          "value": "Dhoofin & Ganacsi"
+        },
+        "established": {
+          "label": "La aasaasay",
+          "value": "2015"
+        },
+        "hq": {
+          "label": "Xarunta Dhexe",
+          "value": "Nairobi, Kenya"
+        }
+      }
+    },
+    "cta": {
+      "title": "Diyaar ma u tahay inaad nala bilowdo safarka?",
+      "body": "Codso xaashiyaha darajooyinka, COA/SDS, iyo muunado."
+    },
+    "buttons": {
+      "contactSales": "La Xiriir Iibka",
+      "browseProducts": "Eeg Alaabada"
+    }
+  },
+  "quality": {
+    "hero": {
+      "kicker": "Tayada EAST Hides & Investment",
+      "title": "Tayo & ",
+      "lastWord": "Heerarka",
+      "subtitle": "Waxaan si toos ah ula shaqaynaa ururiyeyaasha lagu kalsoonaan karo ee ku kala sugan Suudaan, Soomaaliya, iyo Itoobiya—si kasta oo xabagta loo goosto ay u ahaato mid masuuliyad leh oo ixtiraamta deegaanka iyo bulshooyinka.",
+      "rotating": ["wada-shaqeyn.", "tayo.", "asal."]
+    },
+    "standards": {
+      "title": "Tiirarka Tayadeenna",
+      "items": [
+        { "title": "Kala-saaris Tayo", "desc": "Kala sooc muuqaal & cabbir oo isha ku bilowda; tixraacyo la cabbiray; kala saarid heer-lot ah." },
+        { "title": "Xakamaynta Qoyaanka", "desc": "Heerarro bartilmaameed ah oo alaab kasta ah; kaydin xiran; dib-u-hubin qoyaanka ka hor dhoofinta." },
+        { "title": "Xadidaadda Wasakhda", "desc": "Xuduudaha walxo shisheeye oo la dejiyay per spec; nadiifin laba-mar ah ee darajooyinka xasaasiga ah." },
+        { "title": "Dukumiinti", "desc": "COA/SDS marka la codsado, liisaska baakadaha, HS codes, iyo la-raacitaan ilaa gobolka soo saarka." },
+        { "title": "Hab-dhaqan Badbaado Cunto", "desc": "Maareyn nadaafadeed, ilaalinta cayayaanka, iyo liis hubin weelal." },
+        { "title": "Waafaqsanaanta Xeerarka", "desc": "HS, caddaynta waddanka-asalka, iyo shahaadooyin u dhigma shuruudaha dalka loo dhoofinayo." }
+      ],
+      "pillLabel": "Tiirka Tayo"
+    },
+    "process": {
+      "title": "Laga bilaabo Kaynta ilaa Forwarder-ka",
+      "steps": [
+        { "k": "S1", "t": "Soo-ururin & Ururin", "d": "Ururiyeyaal lammaane ah ayaa goosta oo hordhig nadiifin; kala saarid muuqaal hore." },
+        { "k": "S2", "t": "Kala-sooc & Kala-darajo", "d": "Kala sooc cabbir/midab, saarista wasakhda, hubin qoyaanka hordhac ah." },
+        { "k": "S3", "t": "Hubin Shaybaar", "d": "Qoyaanka, aan-milmin/wasakh, muuqaal; muunad kayd ah la qariyey." },
+        { "k": "S4", "t": "Baakad & Xirid", "d": "Baakad sida spec (25 kg / jumbo). Xirmooyin & summado; palletization." },
+        { "k": "S5", "t": "Dukumiinti & Kormeer", "d": "COA/SDS (haddii la codsado), liiska baakadaha, invoice, HS code, caddaynta asal." },
+        { "k": "S6", "t": "Dhoofin", "d": "Liis hubin weel; gudbin forwarder-ka; cusbooneysiin xaalad." }
+      ],
+      "stepLabel": "Tallaabo"
+    },
+    "assurance": {
+      "title": "Cabbirrada Hubinta",
+      "body": "Waxaan ku shaqaynaa habraacyo la duubay, diiwaan-gelin xog, iyo wareegyo sixid ah si joogteyn miisaan leh loo ilaaliyo.",
+      "metrics": [
+        { "label": "Waafaqsanaanta Specs", "value": "99.2%" },
+        { "label": "Celcelis Waqtiga Keenista", "value": "12 maalmood" },
+        { "label": "La-raacitaan Lot", "value": "100%" },
+        { "label": "Heerka Cabashooyinka (12 bilood)", "value": "< 0.8%" }
+      ]
+    },
+    "certs": {
+      "title": "Waafaqsanaan & Shahaadooyin",
+      "items": [
+        { "name": "Xoolo/Phytosanitary", "file": "/quality/cert-vet.pdf", "img": "/quality/qaulity1.png" },
+        { "name": "Chamber of Commerce", "file": "/quality/cert-coo.pdf", "img": "/quality/cert-qaulity1.png" },
+        { "name": "Warbixin Falanqayn (COA)", "file": "/quality/coa-sample.pdf", "img": "/quality/qaulity1.png" }
+      ],
+      "view": "Daawo"
+    },
+    "docsSampling": {
+      "badge": "Muunado & Dukumiinti",
+      "title": "Muunado Wakiil ah & Dukumiinti Lot",
+      "points": [
+        "Muunado kayd ah lot kasta; sawir iyo summad.",
+        "COA/SDS marka la codsado; cabbirro la jaan-qaadaya shuruudaha iibsadaha.",
+        "Qeexitaannada baakadaha, pallets, xirmooyinka, iyo liiska hubinta weelka waa la kaydiyaa."
+      ]
+    },
+    "cta": {
+      "title": "Ma u baahan tahay xaashiyaha darajooyinka ama is-waafajin QA?",
+      "body": "Nala wadaag cabbirradaada; waan xaqiijin doonnaa suuragalnimada iyo jadwalka.",
+      "browse": "Eeg Alaabada",
+      "contact": "La xiriir Kooxda QA"
+    }
+  },
+  "Product": {
+    "breadcrumbs": {
+      "products": "Alaabooyin"
+    },
+    "notFound": {
+      "title": "Alaab lama helin",
+      "desc": "Ma awoodnay inaan helno alaabtaas. Fadlan hubi URL-ka ama eeg buugga alaabta.",
+      "backToProducts": "Ku laabo Alaabooyinka",
+      "goBack": "Ku noqo"
+    },
+    "rfq": {
+      "title": "Codso Qiimeyn",
+      "desc": "Hel qiimaha, waqtiga keenista, iyo faahfaahinta baakadaha.",
+      "start": "Bilow Codsiga",
+      "datasheet": "Datasheet",
+      "for": "Codso Qiimeyn: {{name}}",
+      "cancel": "Jooji",
+      "send": "Dir Codsi",
+      "sending": "Diraya…",
+      "sentTitle": "Codsiga waa la diray!",
+      "sentDesc": "Waxaan helnay codsigaaga, waxaanan kula soo xiriiri doonaa dhawaan.",
+      "close": "Xir"
+    },
+    "keyFacts": {
+      "origin": "Asal",
+      "packaging": "Baakad",
+      "moq": "Tirada Ugu Yar (MOQ)",
+      "leadTime": "Waqtiga Keenista",
+      "flexible": "La-qabsi leh",
+      "tbc": "La xaqiijinayo"
+    },
+    "tabs": {
+      "specs": "Qeexitaanno",
+      "apps": "Adeegsiyada",
+      "noSpecs": "Qeexitaanno lama hayo.",
+      "appsLeadWithAreas": "Warshado iyo isticmaalyo muhiim ah oo alaabtan loo adeegsado:",
+      "appsLeadDefault": "Adeegsiyada caadiga ah waxaa ka mid ah:"
+    },
+    "related": {
+      "title": "Alaabooyin La Xidhiidha",
+      "browseAll": "Dhammaan eeg",
+      "viewProduct": "Eeg Alaabta"
+    },
+    "fields": {
+      "company": "Shirkad",
+      "contactName": "Magaca Xidhiidhka",
+      "email": "Iimayl",
+      "destination": "Meesha loo socdo (Deked/Magaalo)",
+      "quantity": "Tirada",
+      "unit": "Unug",
+      "incoterm": "Incoterm",
+      "message": "Farriin (ikhtiyaari)"
+    },
+    "applications": {
+      "Food & beverage": "Cunto & cabitaan",
+      "Pharmaceuticals": "Dawooyinka",
+      "Cosmetics": "Khawaarij/Isqurxin",
+      "Industrial Use": "Isticmaal Warshadeed"
+    }
+  }
+}
