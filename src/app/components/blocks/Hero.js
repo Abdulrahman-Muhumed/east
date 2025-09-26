@@ -112,19 +112,17 @@ export default function Hero() {
 
                     {/* RIGHT: Abstract Liquid Ring + Image Carousel */}
                     <div className="relative">
-                        <div className="relative mx-auto aspect-square w-full max-w-[520px] grid place-items-center">
-                            {/* Carousel image */}
-                            <div className="relative z-10 w-[100%] aspect-square overflow-hidden hover:scale-[1.02] transition-transform duration-1000 rounded-2xl ">
-                                <Image
-                                    key={imgIndex}
-                                    src={images[imgIndex]}
-                                    alt={imageAlt}
-                                    fill
-                                    sizes="(max-width: 1024px) 80vw, 520px"
-                                    priority
-                                    className="object-contain animate-fade-in"
-                                />
-                            </div>
+                        {/* Carousel image */}
+                        <div className="relative z-10 w-[80%] aspect-square overflow-hidden hover:scale-[1.02] transition-transform duration-1000">
+                            <Image
+                                key={imgIndex}
+                                src={images[imgIndex]}
+                                alt={imageAlt}
+                                fill
+                                sizes="(max-width: 1024px) 80vw, 520px"
+                                priority
+                                className="object-fill animate-fade-in"
+                            />
                         </div>
                     </div>
                 </div>

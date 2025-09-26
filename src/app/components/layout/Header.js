@@ -7,6 +7,7 @@ import { brand } from "../../config/brand";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { Home, Boxes, FlaskConical, Info, Phone, Globe, Sparkles, X as Close } from "lucide-react";
 
 export default function Header() {
     const t = useTranslations();
@@ -188,46 +189,74 @@ export default function Header() {
 
             {/* mobile sheet (aligned to container) */}
             <div
-                className={`md:hidden fixed inset-0 z-30 transition-all ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                    }`}
+                className={`md:hidden fixed inset-0 z-50 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} transition-opacity duration-200`}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Mobile Navigation"
             >
-                <div
-                    className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity"
+                {/* Backdrop */}
+                <button
+                    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                     onClick={() => setOpen(false)}
+                    aria-label="Close menu"
                 />
+
                 <div className="mx-auto max-w-7xl px-4">
                     <div
-                        className={`absolute right-4 left-4 top-20 rounded-2xl border border-white/15
-              bg-[#1a2336] shadow-2xl p-6 transition-transform ${open ? "translate-y-0" : "-translate-y-4"
-                            }`}
+                        className={`absolute left-4 right-0 top-10 rounded-2xl border border-white/10 bg-[#10172a] text-white shadow-2xl transition-transform duration-300 ${open ? "translate-y-0" : "-translate-y-3"}`}
                     >
-                        {/* language picker inside mobile sheet (optional) */}
-                        <div className="mb-3 flex justify-end">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4">
+                            <div className="text-sm font-semibold tracking-wide text-white/80">Menu</div>
+                            <button
+                                onClick={() => setOpen(false)}
+                                className="h-9 w-9 grid place-items-center rounded-xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 transition"
+                                aria-label="Close"
+                            >
+                                <Close size={18} className="opacity-90" />
+                            </button>
+                        </div>
+
+                        {/* Nav */}
+                        <nav className="px-3 pb-3">
+                            <ul className="space-y-2">
+                                {navItems.map((i) => {
+                                    const Icon = getIconFor(i);
+                                    return (
+                                        <li key={i.href}>
+                                            {i.cta ? (
+                                                <Link
+                                                    href={i.href}
+                                                    onClick={() => setOpen(false)}
+                                                    className="block text-center rounded-xl px-4 py-3 font-semibold text-blue-900 bg-yellow-400 hover:brightness-95 shadow-md transition"
+                                                >
+                                                    {i.label}
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href={i.href}
+                                                    onClick={() => setOpen(false)}
+                                                    className="flex items-center gap-3 rounded-xl px-3 py-3 ring-1 ring-white/10 bg-white/0 hover:bg-white/5 transition"
+                                                >
+                                                    <span className="h-9 w-9 grid place-items-center rounded-lg bg-white/5 ring-1 ring-white/10">
+                                                        <Icon size={18} className="opacity-90" />
+                                                    </span>
+                                                    <span className="font-medium text-white/95">{i.label}</span>
+                                                </Link>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </nav>
+
+                        {/* Language picker (below the links) */}
+                        <div className="px-4 pt-2 pb-4 border-t border-white/10">
                             <LanguagePicker compact />
                         </div>
 
-                        <ul className="space-y-3">
-                            {navItems.map((i) => (
-                                <li key={i.href}>
-                                    {i.cta ? (
-                                        <Link
-                                            href={i.href}
-                                            className="block text-center rounded-2xl px-4 py-3 font-semibold text-blue-900 bg-yellow-400 hover:brightness-95"
-                                        >
-                                            {i.label}
-                                        </Link>
-                                    ) : (
-                                        <Link
-                                            href={i.href}
-                                            className="block px-2 py-2 text-white/90 hover:text-white border-b border-white/10"
-                                        >
-                                            {i.label}
-                                        </Link>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="pt-4 text-xs text-white/60">
+                        {/* Footer (optional) */}
+                        <div className="px-4 pb-4 text-[11px] text-white/60">
                             © {new Date().getFullYear()} {brand?.name ?? "East"}
                         </div>
                     </div>
@@ -373,4 +402,15 @@ function LanguagePicker({ compact = false }) {
       `}</style>
         </div>
     );
+}
+
+function getIconFor(item) {
+  const k = (item.label || item.href || "").toLowerCase();
+  if (k.includes("home")) return Home;
+  if (k.includes("product")) return Boxes;
+  if (k.includes("lab") || k.includes("spec")) return FlaskConical;
+  if (k.includes("contact")) return Phone;
+  if (k.includes("about")) return Info;
+  if (k.includes("lang") || k.includes("globe")) return Globe;
+  return Sparkles;
 }
