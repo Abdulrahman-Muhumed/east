@@ -378,17 +378,13 @@ const gridParent = {
     show: { transition: { staggerChildren: 0.06 } },
 };
 const fadeChild = {
-    hidden: { opacity: 0, y: 14, scale: 0.99 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+    hidden: { opacity: 1, y: 1, scale: 0.99 },
+    show: { opacity: 1, y: 1, scale: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
     return (
-        <motion.div
-            variants={gridParent}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+        <div
             className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3"
         >
             {items.map((p) => (
@@ -402,7 +398,7 @@ const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
                     />
                 </motion.div>
             ))}
-        </motion.div>
+        </div>
     );
 };
 
@@ -422,12 +418,8 @@ const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
                 </thead>
                 <tbody>
                     {items.map((p, i) => (
-                        <motion.tr
+                        <tr
                             key={p.id || p.slug || i}
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true, margin: "0px 0px -60px 0px" }}
-                            transition={{ duration: 0.35 }}
                             className="border-t border-neutral-200"
                         >
                             <td className="px-4 py-3">
@@ -480,7 +472,7 @@ const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
                                     </label>
                                 </div>
                             </td>
-                        </motion.tr>
+                        </tr>
                     ))}
                 </tbody>
             </table>
@@ -1013,102 +1005,6 @@ const RFQModal = ({ product, onClose }) => {
 // ───────────────────────────────────────────────────────────────
 // Compare Drawer (Open link kept; matches requirement)
 // ───────────────────────────────────────────────────────────────
-const CompareDrawer22 = ({ products, compare, onCloseItem, onClear }) => {
-    const items = compare
-        .map((id) => products.find((p) => p.id === id))
-        .filter(Boolean);
-
-    return (
-        <div
-            className={`fixed inset-x-0 bottom-0 z-40 transition-transform duration-400 ${items.length ? "translate-y-0" : "translate-y-full"
-                }`}
-        >
-            <div className="mx-auto max-w-6xl rounded-t-3xl border border-neutral-200 bg-white shadow-2xl">
-                <div className="flex items-center justify-between px-4 sm:px-6 py-3">
-                    <div className="font-semibold">Compare ({items.length}/3)</div>
-                    <div className="flex items-center gap-2">
-                        <button onClick={onClear} className="text-sm underline">
-                            Clear
-                        </button>
-                    </div>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
-                        <thead className="bg-neutral-50">
-                            <tr>
-                                <th className="px-4 py-3 text-left">Product</th>
-                                <th className="px-4 py-3 text-left">HS</th>
-                                <th className="px-4 py-3 text-left">Origin</th>
-                                <th className="px-4 py-3 text-left">MOQ</th>
-                                <th className="px-4 py-3 text-left">Lead</th>
-                                <th className="px-4 py-3 text-left">Key Spec</th>
-                                <th className="px-4 py-3 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items.map((p) => (
-                                <tr key={p.id} className="border-t border-neutral-200">
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <Link
-                                                href={`/products/${p.slug}`}
-                                                className="relative h-10 w-10 overflow-hidden rounded-lg ring-1 ring-neutral-200"
-                                            >
-                                                <Image
-                                                    src={p.images?.[0] || "/products/placeholder.jpg"}
-                                                    alt={p.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </Link>
-                                            <div className="min-w-0">
-                                                <Link href={`/products/${p.slug}`} className="font-medium hover:underline">
-                                                    {p.name}
-                                                </Link>
-                                                <button
-                                                    onClick={() => onCloseItem(p.id)}
-                                                    className="text-xs text-neutral-500 underline"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">{p.hsCode || "-"}</td>
-                                    <td className="px-4 py-3">
-                                        {(p.originCountries || []).join(" • ")}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {p.moqKg ? `${p.moqKg} kg` : "-"}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {p.leadTimeDays ? `${p.leadTimeDays} d` : "-"}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {p.specs ? `${Object.keys(p.specs)[0]}: ${Object.values(p.specs)[0]}` : "-"}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <Link href={`/products/${p.slug}`} className="text-xs underline">
-                                            Open
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                            {!items.length && (
-                                <tr>
-                                    <td className="px-4 py-6 text-center text-neutral-500" colSpan={7}>
-                                        Select up to 3 products to compare
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
     const items = compare
         .map((id) => products.find((p) => p.id === id))
