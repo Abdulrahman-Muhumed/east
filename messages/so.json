@@ -6,10 +6,27 @@
     "quality": "Tayo",
     "contact": "Nala Soo Xiriir"
   },
+  "Footer": {
+    "quickLinks": "Xiriir koban",
+    "products": "Alaabooyin",
+    "contact": "La xidhiidh",
+    "headquarters": "Xafiiska Dhexe",
+    "getInTouch": "Nala soo xidhiidh",
+    "legalTerms": "Shuruudo",
+    "legalPrivacy": "Shuruudo & Qarsoodi",
+    "legalContact": "La xidhiidh",
+    "rights": "Xuquuqda oo dhan waa la ilaalinayaa."
+  },
   "home": {
     "hero": {
       "title": "Arabic Gum tayo sare leh oo Afrikada Bari",
-      "subtitle": "Si toos ah isha • Tayo joogto ah • Qadaro dabacsan"
+      "aria": "Qaybta Hero",
+      "words": ["Saafi", "La aamini karo", "La socon karo", "Xalaal", "Hufan"],
+      "titleTrailing": "Arabic Gum",
+      "subtitle": "Xabagta Carabta oo dib loo qeexay: sahay nadiif ah, qeexitaanno sax ah, iyo natiijo ay macaamiishu ku kalsoonaan karaan.",
+      "cta": "Codso Tusaale",
+      "industries": ["Cunto & Cabitaan", "Daawooyinka", "Qurxinta", "Macmacaanka"],
+      "imageAlt": "Soo-bandhigidda Xabagta Carabta"
     },
     "commitment": {
       "titleA": "Waxaan ku dhisnay",
@@ -248,6 +265,13 @@
     "breadcrumbs": {
       "products": "Alaabooyin"
     },
+    "hero": {
+      "kicker": "",
+      "titleA": "",
+      "titleB": "Alaabooyin-ka",
+      "subtitle": "Xabagta Carabta, Malmal, Opoponax, iyo Foox tayo sare leh — laga soo xulay isha asalka, si nidaam leh loo kala sarrayeeyo, loona geeyo si sax ah.",
+      "rotating": ["iskaashi.", "tayo.", "asal."]
+    },
     "notFound": {
       "title": "Alaab lama helin",
       "desc": "Ma awoodnay inaan helno alaabtaas. Fadlan hubi URL-ka ama eeg buugga alaabta.",
@@ -302,6 +326,41 @@
       "Pharmaceuticals": "Dawooyinka",
       "Cosmetics": "Khawaarij/Isqurxin",
       "Industrial Use": "Isticmaal Warshadeed"
+    }
+  },
+  "Contact": {
+    "hero": {
+      "kicker": "",
+      "title": "Nala Soo",
+      "lastWord": "Xiriir",
+      "subtitle": "Nooga sheeg mashruucaaga, weydii su'aal, ama si fudud u salaamo. Waxaan halkan u joognaa inaan kaa caawinno bilowga.",
+      "rotating": ["iskaashi.", "tayo.", "asal."]
+    },
+    "info": {
+      "title": "La xiriir kooxdeena",
+      "desc": "Waxaan u heellan nahay adeeg heer sare ah. Haddii aad su'aalo ka qabto alaabtayada ama aad u baahan tahay caawimo dalab, waanu ku caawin doonaa.",
+      "emailTitle": "Cinwaanka E-mailka",
+      "phoneTitle": "Lambarka Taleefanka",
+      "locationTitle": "Goobta Xafiiska",
+      "emailValue": "hello@yourcompany.com",
+      "phoneValue": "+1 (555) 123-4567",
+      "locationValue": "1 Infinite Loop, Cupertino, CA 95014"
+    },
+    "form": {
+      "sentTitle": "Fariinta waa la diray!",
+      "sentDesc": "Mahadsanid nala soo xiriiridda. Waanu kula soo xidhiidhi doonaa goor dhow.",
+      "sendAnother": "Dir fariin kale",
+      "name": "Magaca Buuxa",
+      "company": "Shirkad (Ikhtiyaari)",
+      "email": "Cinwaanka E-mailka",
+      "phone": "Lambarka Taleefanka (Ikhtiyaari)",
+      "subject": "Mawduuc",
+      "message": "Fariin",
+      "send": "Dir Fariinta",
+      "sending": "Diraya..."
+    },
+    "map": {
+      "title": "Khariidadda Xafiiska"
     }
   }
 }

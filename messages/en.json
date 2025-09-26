@@ -6,35 +6,76 @@
     "quality": "Quality",
     "contact": "Contact"
   },
-  "home": { 
-    "hero": { "title": "Premium Arabic Gum from East Africa", "subtitle": "Direct-from-source • Consistent quality • Flexible quantities" },
+  "Footer": {
+    "quickLinks": "Quick Links",
+    "products": "Products",
+    "contact": "Contact",
+    "headquarters": "Headquarters",
+    "getInTouch": "Get in touch",
+    "legalTerms": "Terms",
+    "legalPrivacy": "Terms & Privacy",
+    "legalContact": "Contact",
+    "rights": "All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "title": "Premium Arabic Gum from East Africa",
+      "aria": "Hero",
+      "words": ["Pure", "Trusted", "Traceable", "Halal", "Premium"],
+      "titleTrailing": "Arabic Gum",
+      "subtitle": "Arabic Gum, redefined: clean sourcing, tight specs, and a finish your customers can trust.",
+      "cta": "Request a Sample",
+      "industries": ["Food & Beverage", "Pharma", "Cosmetics", "Confectionery"],
+      "imageAlt": "Arabic Gum showcase"
+    },
     "commitment": {
       "titleA": "Built on",
       "titleB": "Proof",
       "titleC": ", not promises",
       "desc": "Direct origin, lab-verified, globally compliant. Short supply chain, long-term trust.",
       "metrics": {
-        "coa": { "k": "COA / Shipment", "v": "100%", "note": "Every lot documented" },
-        "trace": { "k": "Traceability", "v": "End-to-end", "note": "Origin → Delivery" },
-        "lead": { "k": "Lead Time", "v": "7–12 days", "note": "Predictable logistics" }
+        "coa": {
+          "k": "COA / Shipment",
+          "v": "100%",
+          "note": "Every lot documented"
+        },
+        "trace": {
+          "k": "Traceability",
+          "v": "End-to-end",
+          "note": "Origin → Delivery"
+        },
+        "lead": {
+          "k": "Lead Time",
+          "v": "7–12 days",
+          "note": "Predictable logistics"
+        }
       },
       "features": {
         "sourced": {
           "title": "Sourced at Origin",
           "body": "Direct relationships with producers ensure authenticity and consistency.",
-          "points": ["Single-origin lots", "Lot-level traceability"],
+          "points": [
+            "Single-origin lots",
+            "Lot-level traceability"
+          ],
           "cta": "Learn more"
         },
         "lab": {
           "title": "Lab Verified",
           "body": "COAs match independent labs; specs hold under scrutiny.",
-          "points": ["Micro & heavy metals", "Emulsification power"],
+          "points": [
+            "Micro & heavy metals",
+            "Emulsification power"
+          ],
           "cta": "Learn more"
         },
         "industry": {
           "title": "Industry Ready",
           "body": "Aligned to ISO/GMP workflows with documentation on tap.",
-          "points": ["COA / SDS ready", "Regulatory alignment"],
+          "points": [
+            "COA / SDS ready",
+            "Regulatory alignment"
+          ],
           "cta": "Learn more"
         }
       }
@@ -43,8 +84,17 @@
       "titleA": "Featured",
       "titleB": "Resins",
       "desc": "Tight specs. Clean aroma. Documentation ready.",
-      "tags": ["Food & Beverage", "Pharma", "Cosmetics", "Incense/Perfume"],
-      "chips": ["25kg bags", "MOQ 500kg", "Lead 7–12d"],
+      "tags": [
+        "Food & Beverage",
+        "Pharma",
+        "Cosmetics",
+        "Incense/Perfume"
+      ],
+      "chips": [
+        "25kg bags",
+        "MOQ 500kg",
+        "Lead 7–12d"
+      ],
       "ctaView": "View Details",
       "ctaSample": "Request Sample",
       "ariaPrev": "Previous product",
@@ -147,10 +197,22 @@
       "title": "A Glimpse of Our Company",
       "body": "EAST is a premier exporter and trader of natural gum resins — Arabic Gum (grades 1 & 2), Myrrh, Opoponax, and Frankincense. With offices in Nairobi, Kenya, and Juba, South Sudan, we are committed to providing exceptional quality products globally.",
       "cards": {
-        "ceo": { "label": "CEO", "value": "Mahdi Hassan Abdulkarim" },
-        "business": { "label": "Business", "value": "Export & Trade" },
-        "established": { "label": "Established", "value": "2015" },
-        "hq": { "label": "Headquarters", "value": "Nairobi, Kenya" }
+        "ceo": {
+          "label": "CEO",
+          "value": "Mahdi Hassan Abdulkarim"
+        },
+        "business": {
+          "label": "Business",
+          "value": "Export & Trade"
+        },
+        "established": {
+          "label": "Established",
+          "value": "2015"
+        },
+        "hq": {
+          "label": "Headquarters",
+          "value": "Nairobi, Kenya"
+        }
       }
     },
     "cta": {
@@ -168,29 +230,75 @@
       "title": "Quality & ",
       "lastWord": "Standards",
       "subtitle": "We partner directly with trusted collectors across Sudan, Somalia, and Ethiopia, ensuring every resin is harvested responsibly with respect to the environment and local communities.",
-      "rotating": ["partnership.", "quality.", "origin."]
+      "rotating": [
+        "partnership.",
+        "quality.",
+        "origin."
+      ]
     },
     "standards": {
       "title": "Our Quality Pillars",
       "items": [
-        { "title": "Grading Discipline", "desc": "Visual & size grading at origin with calibrated references; lot-level separation." },
-        { "title": "Moisture Control", "desc": "Target ranges per product; sealed storage; moisture re-check pre-export." },
-        { "title": "Impurity Limits", "desc": "Foreign matter thresholds set per spec; double-pass cleaning for sensitive grades." },
-        { "title": "Documentation", "desc": "COA/SDS on request, packing lists, HS codes, and traceability down to producing region." },
-        { "title": "Food Safety Mindset", "desc": "Hygienic handling, pest control routines, and container inspection checklists." },
-        { "title": "Regulatory Fit", "desc": "HS, country-of-origin proofs, and certificates aligned to destination requirements." }
+        {
+          "title": "Grading Discipline",
+          "desc": "Visual & size grading at origin with calibrated references; lot-level separation."
+        },
+        {
+          "title": "Moisture Control",
+          "desc": "Target ranges per product; sealed storage; moisture re-check pre-export."
+        },
+        {
+          "title": "Impurity Limits",
+          "desc": "Foreign matter thresholds set per spec; double-pass cleaning for sensitive grades."
+        },
+        {
+          "title": "Documentation",
+          "desc": "COA/SDS on request, packing lists, HS codes, and traceability down to producing region."
+        },
+        {
+          "title": "Food Safety Mindset",
+          "desc": "Hygienic handling, pest control routines, and container inspection checklists."
+        },
+        {
+          "title": "Regulatory Fit",
+          "desc": "HS, country-of-origin proofs, and certificates aligned to destination requirements."
+        }
       ],
       "pillLabel": "Quality Pillar"
     },
     "process": {
       "title": "From Forest to Forwarder",
       "steps": [
-        { "k": "S1", "t": "Source & Collect", "d": "Partner collectors harvest and pre-clean; initial visual grading." },
-        { "k": "S2", "t": "Sort & Grade", "d": "Size/color sorting, removal of impurities, preliminary moisture checks." },
-        { "k": "S3", "t": "Lab Verify", "d": "Moisture, insolubles/impurities, appearance; retain sample archived." },
-        { "k": "S4", "t": "Pack & Seal", "d": "Packaging per spec (25 kg / jumbo). Seals & labels applied; palletization." },
-        { "k": "S5", "t": "Docs & Audit", "d": "COA/SDS (if requested), packing list, invoice, HS code, origin proofs." },
-        { "k": "S6", "t": "Dispatch", "d": "Container inspection checklist; handoff to forwarder; status updates." }
+        {
+          "k": "S1",
+          "t": "Source & Collect",
+          "d": "Partner collectors harvest and pre-clean; initial visual grading."
+        },
+        {
+          "k": "S2",
+          "t": "Sort & Grade",
+          "d": "Size/color sorting, removal of impurities, preliminary moisture checks."
+        },
+        {
+          "k": "S3",
+          "t": "Lab Verify",
+          "d": "Moisture, insolubles/impurities, appearance; retain sample archived."
+        },
+        {
+          "k": "S4",
+          "t": "Pack & Seal",
+          "d": "Packaging per spec (25 kg / jumbo). Seals & labels applied; palletization."
+        },
+        {
+          "k": "S5",
+          "t": "Docs & Audit",
+          "d": "COA/SDS (if requested), packing list, invoice, HS code, origin proofs."
+        },
+        {
+          "k": "S6",
+          "t": "Dispatch",
+          "d": "Container inspection checklist; handoff to forwarder; status updates."
+        }
       ],
       "stepLabel": "Step"
     },
@@ -198,18 +306,42 @@
       "title": "Assurance Metrics",
       "body": "We operate with documented processes, data logging, and corrective action loops to maintain consistency at scale.",
       "metrics": [
-        { "label": "Spec Conformance", "value": "99.2%" },
-        { "label": "Average Lead Time", "value": "12 d" },
-        { "label": "Lot Traceability", "value": "100%" },
-        { "label": "Claims Rate (12m)", "value": "< 0.8%" }
+        {
+          "label": "Spec Conformance",
+          "value": "99.2%"
+        },
+        {
+          "label": "Average Lead Time",
+          "value": "12 d"
+        },
+        {
+          "label": "Lot Traceability",
+          "value": "100%"
+        },
+        {
+          "label": "Claims Rate (12m)",
+          "value": "< 0.8%"
+        }
       ]
     },
     "certs": {
       "title": "Compliance & Certificates",
       "items": [
-        { "name": "Veterinary / Phytosanitary", "file": "/quality/cert-vet.pdf", "img": "/quality/qaulity1.png" },
-        { "name": "Chamber of Commerce", "file": "/quality/cert-coo.pdf", "img": "/quality/cert-qaulity1.png" },
-        { "name": "Analysis (COA)", "file": "/quality/coa-sample.pdf", "img": "/quality/qaulity1.png" }
+        {
+          "name": "Veterinary / Phytosanitary",
+          "file": "/quality/cert-vet.pdf",
+          "img": "/quality/qaulity1.png"
+        },
+        {
+          "name": "Chamber of Commerce",
+          "file": "/quality/cert-coo.pdf",
+          "img": "/quality/cert-qaulity1.png"
+        },
+        {
+          "name": "Analysis (COA)",
+          "file": "/quality/coa-sample.pdf",
+          "img": "/quality/qaulity1.png"
+        }
       ],
       "view": "View"
     },
@@ -232,6 +364,17 @@
   "Product": {
     "breadcrumbs": {
       "products": "Products"
+    },
+    "hero": {
+      "kicker": "",
+      "titleA": "Our",
+      "titleB": "Products",
+      "subtitle": "Premium Arabic Gum, Myrrh, Opoponax, and Frankincense — curated at origin, graded with discipline, delivered with precision.",
+      "rotating": [
+        "partnership.",
+        "quality.",
+        "origin."
+      ]
     },
     "notFound": {
       "title": "Product not found",
@@ -288,8 +431,40 @@
       "Cosmetics": "Cosmetics",
       "Industrial Use": "Industrial Use"
     }
+  },
+  "Contact": {
+    "hero": {
+      "kicker": "",
+      "title": "Contact",
+      "lastWord": "US",
+      "subtitle": "Tell us about your project, ask a question, or just say hello. We’re here to help you get started",
+      "rotating": ["partnership.", "quality.", "origin."]
+    },
+    "info": {
+      "title": "Reach out to our team",
+      "desc": "We're dedicated to providing exceptional service. Whether you have questions about our products or need assistance with an order, we’re ready to help.",
+      "emailTitle": "Email Address",
+      "phoneTitle": "Phone Number",
+      "locationTitle": "Office Location",
+      "emailValue": "hello@yourcompany.com",
+      "phoneValue": "+1 (555) 123-4567",
+      "locationValue": "1 Infinite Loop, Cupertino, CA 95014"
+    },
+    "form": {
+      "sentTitle": "Message Sent!",
+      "sentDesc": "Thank you for reaching out. We will get back to you shortly.",
+      "sendAnother": "Send another message",
+      "name": "Full Name",
+      "company": "Company (Optional)",
+      "email": "Email Address",
+      "phone": "Phone Number (Optional)",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message",
+      "sending": "Sending..."
+    },
+    "map": {
+      "title": "Office Map"
+    }
   }
-
 }
-
-

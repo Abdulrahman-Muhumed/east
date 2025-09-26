@@ -66,7 +66,7 @@ export default function HeroCinematic({
             )}
 
             {/* CONTENT */}
-            <div className={`relative container mx-auto px-4 sm:px-6 py-24 flex flex-col ${alignCls}`}>
+            <div className={`relative container mx-auto px-4 sm:px-6 flex py-5 lg:pt-24 lg:pb-10 md:pt-24 md:pb-10 flex-col ${alignCls}`}>
                 {/* Eyebrow */}
                 {kicker ? (
                     <Reveal as="span" className="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest uppercase text-neutral-700 border border-neutral-300 bg-white/70 backdrop-blur-sm" delay={0}>
@@ -84,7 +84,7 @@ export default function HeroCinematic({
 
                 {/* Subtitle */}
                 {subtitle && (
-                    <Reveal as="p" delay={140} className={`mt-5 max-w-2xl ${align === "center" ? "mx-auto text-center" : ""} ${hasActionbtn ? "text-white/95 md:text-neutral-700" : "text-neutral-600"} text-base sm:text-lg`}>
+                    <Reveal as="p" delay={140} className={`mt-5 max-w-2xl ${align === "center" ? "mx-auto text-center" : ""} ${hasActionbtn ? "text-neutral-700" : "text-neutral-600"} text-base sm:text-lg`}>
                         {subtitle}
                     </Reveal>
                 )}
@@ -125,6 +125,7 @@ export default function HeroCinematic({
                         </div>
                     </Reveal>
                 ) : null}
+                
             </div>
 
             {/* Styles */}

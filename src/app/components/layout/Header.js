@@ -6,6 +6,7 @@ import { siteNav } from "../../config/site";
 import { brand } from "../../config/brand";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function Header() {
     const t = useTranslations();
@@ -88,7 +89,7 @@ export default function Header() {
             >
                 {/* glass card */}
                 <div
-                    className={`relative rounded-2xl border backdrop-blur-xl bg-white/30
+                    className={`relative rounded-2xl border backdrop-blur-xl bg-white/40
             border-white/15 shadow-[0_12px_30px_-12px_rgba(0,0,0,0.35)]
             ${scrolled ? "shadow-[0_14px_42px_-12px_rgba(0,0,0,0.45)] bg-white/70" : ""}`}
                 >
@@ -97,28 +98,37 @@ export default function Header() {
                     <div className="h-16 px-4 md:px-6 flex items-center justify-between">
                         {/* brand */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="h-8 w-8 rounded-xl bg-yellow-400 grid place-items-center shadow-md animate-[pop_900ms_ease-out_1]">
-                                {/* simple “leaf/drop” icon built with CSS border radius */}
-                                <div className="h-3.5 w-3.5 bg-[var(--h-blue)] rounded-bl-[1.15rem] rounded-tr-[1.15rem] rounded-br-sm rounded-tl-sm group-hover:scale-110 transition-transform" />
+                            <div className="h-8 w-8 rounded-xl bg-yellow-400 grid place-items-center shadow-md animate-[pop_900ms_ease-out_1] group">
+                                <div className="relative h-8 w-8">
+                                    <Image
+                                        src="/east_logo2.png"            // use "/east_logo.png" if that's your file
+                                        alt="East Logo"
+                                        fill
+                                        className="object-contain transition-transform duration-300 ease-out will-change-transform group-hover:scale-110"
+                                        draggable={false}
+                                        priority
+                                    />
+                                </div>
                             </div>
+
                             <span className="hidden sm:inline text-sm font-semibold tracking-wide text-black">
                                 {brand?.name ?? "East"}
                             </span>
                             <style jsx>{`
-                @keyframes pop {
-                  0% {
-                    transform: scale(0.85);
-                    opacity: 0;
-                  }
-                  60% {
-                    transform: scale(1.06);
-                    opacity: 1;
-                  }
-                  100% {
-                    transform: scale(1);
-                  }
-                }
-              `}</style>
+                                    @keyframes pop {
+                                    0% {
+                                        transform: scale(0.85);
+                                        opacity: 0;
+                                    }
+                                    60% {
+                                        transform: scale(1.06);
+                                        opacity: 1;
+                                    }
+                                    100% {
+                                        transform: scale(1);
+                                    }
+                                    }
+                                `}</style>
                         </Link>
 
                         {/* desktop nav */}

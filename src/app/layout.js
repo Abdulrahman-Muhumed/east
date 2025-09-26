@@ -2,12 +2,14 @@ import "./globals.css";
 import { brand } from "./config/brand";
 
 export const metadata = {
-  title: "East — Arabic Gum & Natural Resins",
+  title: "East — Hides and investment company LTD",
   description: "Premium East African sourcing. Ethical trade, consistent grades.",
   icons: {
-    icon: '/east_image2.png',             // or '/icon.png'
-    apple: '/east_image2.png',
-    shortcut: '/east_image2.png',
+    icon: [
+      { url: '/east_logo.png', sizes: '16x16', type: 'image/png' },
+      { url: '/east_logo-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: { url: '/east_logo.png', sizes: '180x180' },
   },
 };
 

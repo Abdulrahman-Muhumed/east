@@ -4,10 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Link } from "../../../../../i18n/navigation"; // Hoggaan-style wrapper
 import { motion, AnimatePresence } from "framer-motion";
-import Hero2 from "../../../components/blocks/Hero2";
+import Hero from "../../../components/blocks/Hero2";
 import { listProducts } from "../../../data/products";
 import { brand } from "../../../config/brand";
-
+import { useTranslations } from "next-intl";
 // ───────────────────────────────────────────────────────────────
 // Brand
 // ───────────────────────────────────────────────────────────────
@@ -34,12 +34,15 @@ export default function ProductsPage() {
         return () => clearTimeout(id);
     }, []);
 
+    // Filters (controlled)
     const [q, setQ] = useState("");
     const [category, setCategory] = useState("All");
     const [originsOpen, setOriginsOpen] = useState(false);
     const [originFilters, setOriginFilters] = useState([]);
     const [sort, setSort] = useState("alpha");
     const [view, setView] = useState("grid"); // "grid" | "table"
+
+    // Other UI state (kept as-is)
     const [quickProduct, setQuickProduct] = useState(null);
     const [rfqProduct, setRfqProduct] = useState(null);
     const [compare, setCompare] = useState([]); // array of product ids
@@ -73,16 +76,15 @@ export default function ProductsPage() {
 
         // origins
         if (originFilters.length > 0) {
-            list = list.filter((p) =>
-                p.originCountries?.some((c) => originFilters.includes(c))
-            );
+            const set = new Set(originFilters);
+            list = list.filter((p) => (p.originCountries || []).some((c) => set.has(c)));
         }
 
         // sort
         list.sort((a, b) => {
-            if (sort === "alpha") return a.name.localeCompare(b.name);
-            if (sort === "moq") return (a.moqKg ?? 0) - (b.moqKg ?? 0);
-            if (sort === "lead") return (a.leadTimeDays ?? 999) - (b.leadTimeDays ?? 999);
+            if (sort === "alpha") return (a.name ?? "").localeCompare(b.name ?? "");
+            if (sort === "moq") return (a.moqKg ?? Number.MAX_SAFE_INTEGER) - (b.moqKg ?? Number.MAX_SAFE_INTEGER);
+            if (sort === "lead") return (a.leadTimeDays ?? Number.MAX_SAFE_INTEGER) - (b.leadTimeDays ?? Number.MAX_SAFE_INTEGER);
             return 0;
         });
 
@@ -97,18 +99,27 @@ export default function ProductsPage() {
         });
     };
 
+    const clearAll = () => {
+        setQ("");
+        setCategory("All");
+        setOriginFilters([]);
+        setSort("alpha");
+    };
+
+    const t = useTranslations("Product.hero");
+
     return (
         <div className="min-h-screen bg-white text-neutral-900">
-            <Hero2
+            <Hero
                 variant="image"
                 bgImage="/product_bg.png"
-                kicker=""
-                title="Our "
-                lastWord="Products"
+                kicker={t("kicker")}
+                title={t("titleA")}
+                lastWord={t("titleB")}
                 hasActionbtn="no"
                 hasStats=""
-                subtitle="Premium Arabic Gum, Myrrh, Opoponax, and Frankincense — curated at origin, graded with discipline, delivered with precision."
-                rotatingWords={["partnership.", "quality.", "origin."]}
+                subtitle={t("subtitle")}
+                rotatingWords={t.raw("rotating")} // array
             />
 
             <FilterBar
@@ -116,16 +127,26 @@ export default function ProductsPage() {
                 setQ={setQ}
                 categories={categories}
                 category={category}
-                setCategory={setCategory}
+                setCategory={(val) => {
+                    // Selecting any category clears to that category; selecting "All" resets
+                    setCategory(val || "All");
+                }}
                 origins={origins}
                 originFilters={originFilters}
-                setOriginFilters={setOriginFilters}
+                setOriginFilters={(updater) => {
+                    // Ensure dedup & stable reference
+                    setOriginFilters((prev) => {
+                        const next = typeof updater === "function" ? updater(prev) : updater || [];
+                        return Array.from(new Set(next));
+                    });
+                }}
                 originsOpen={originsOpen}
                 setOriginsOpen={setOriginsOpen}
                 sort={sort}
                 setSort={setSort}
                 view={view}
                 setView={setView}
+                onClearAll={clearAll}
             />
 
             <div className="container mx-auto px-4 sm:px-6 py-8">
@@ -184,10 +205,10 @@ export default function ProductsPage() {
     );
 }
 
-// ───────────────────────────────────────────────────────────────
-// Filter Bar (sticky)
-// ───────────────────────────────────────────────────────────────
-const FilterBar = ({
+/* ───────────────────────────────────────────────────────────────
+   Filter Bar (sticky)
+─────────────────────────────────────────────────────────────── */
+function FilterBar({
     q,
     setQ,
     categories,
@@ -202,43 +223,63 @@ const FilterBar = ({
     setSort,
     view,
     setView,
-}) => {
-    const barRef = useRef(null);
+    onClearAll,
+}) {
+    // Close origin popover on outside click
+    const popRef = useRef(null);
     useEffect(() => {
-        const el = barRef.current;
-        if (!el) return;
-        const onScroll = () => {
-            const scrolled = window.scrollY > 10;
-            el.classList.toggle("shadow-sm", scrolled);
+        const onClick = (e) => {
+            if (!popRef.current) return;
+            if (!popRef.current.contains(e.target)) setOriginsOpen(false);
         };
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
+        document.addEventListener("mousedown", onClick);
+        return () => document.removeEventListener("mousedown", onClick);
+    }, [setOriginsOpen]);
+
+    const anyActive =
+        q.trim().length > 0 ||
+        category !== "All" ||
+        (originFilters && originFilters.length > 0) ||
+        sort !== "alpha";
 
     return (
-        <div
-            ref={barRef}
-            className="sticky top-20 z-30 border-t border-b border-neutral-200/70 bg-white/80 backdrop-blur-md"
-        >
-            <div className="container mx-auto px-4 sm:px-6">
+        <div className="lg:sticky md:lg:sticky relative lg:top-20 md:lg:top-20 top-0 z-30">
+            <div className="container mx-auto px-4 sm:px-6 bg-[#ffd028]/60 rounded-3xl py-4">
                 <div className="flex flex-col gap-3 py-3">
                     {/* Row 1: Search & Sort */}
                     <div className="flex flex-wrap items-center gap-3">
-                        <SearchBox value={q} onChange={setQ} placeholder="Search by name, HS code, spec…" />
+                        <SearchBox
+                            value={q}
+                            onChange={(val) => setQ(val)}
+                            placeholder="Search by name, HS code, spec…"
+                        />
                         <div className="ml-auto flex items-center gap-2">
                             <SortSelect value={sort} onChange={setSort} />
                             <ViewToggle view={view} setView={setView} />
+                            {anyActive && (
+                                <button
+                                    onClick={onClearAll}
+                                    className="rounded-xl border border-neutral-300 bg-white px-3 py-1.5 text-sm hover:bg-neutral-50"
+                                    title="Clear all filters"
+                                >
+                                    Clear all
+                                </button>
+                            )}
                         </div>
                     </div>
 
                     {/* Row 2: Categories & Origins */}
                     <div className="flex flex-wrap items-center gap-2">
-                        <ChipGroup options={categories} value={category} onChange={setCategory} accent={ACCENT} />
-                        <div className="relative">
+                        <ChipGroup
+                            options={categories}
+                            value={category}
+                            onChange={(val) => setCategory(val)}
+                        />
+
+                        <div className="relative" ref={popRef}>
                             <button
                                 onClick={() => setOriginsOpen((v) => !v)}
-                                className="inline-flex items-center gap-2 rounded-2xl border border-neutral-200 bg-white px-3 py-1.5 text-sm hover:border-neutral-300"
+                                className="inline-flex items-center gap-2 lg:rounded-2xl md:rounded-2xl border border-neutral-200 bg-white px-3 py-1.5 text-sm hover:border-neutral-300"
                             >
                                 <GlobeIcon className="h-4 w-4" />
                                 Origin
@@ -249,6 +290,7 @@ const FilterBar = ({
                                 )}
                                 <ChevronDown className="h-4 w-4 opacity-60" />
                             </button>
+
                             <AnimatePresence>
                                 {originsOpen && (
                                     <motion.div
@@ -257,7 +299,6 @@ const FilterBar = ({
                                         exit={{ opacity: 0, y: 6 }}
                                         transition={{ duration: 0.18 }}
                                         className="absolute left-0 mt-2 w-56 rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg"
-                                        onMouseLeave={() => setOriginsOpen(false)}
                                     >
                                         <div className="max-h-64 overflow-auto pr-1">
                                             {origins.map((o) => {
@@ -276,7 +317,9 @@ const FilterBar = ({
                                                             onChange={(e) => {
                                                                 const checked = e.target.checked;
                                                                 setOriginFilters((prev) =>
-                                                                    checked ? [...prev, o] : prev.filter((x) => x !== o)
+                                                                    checked
+                                                                        ? [...prev, o]
+                                                                        : prev.filter((x) => x !== o)
                                                                 );
                                                             }}
                                                         />
@@ -284,6 +327,7 @@ const FilterBar = ({
                                                 );
                                             })}
                                         </div>
+
                                         {originFilters.length > 0 && (
                                             <button
                                                 onClick={() => setOriginFilters([])}
@@ -300,7 +344,9 @@ const FilterBar = ({
                         {/* Active filters */}
                         <div className="flex flex-wrap items-center gap-1">
                             {category !== "All" && (
-                                <ActivePill onClear={() => setCategory("All")}>{category}</ActivePill>
+                                <ActivePill onClear={() => setCategory("All")}>
+                                    {category}
+                                </ActivePill>
                             )}
                             {originFilters.map((o) => (
                                 <ActivePill
@@ -312,13 +358,17 @@ const FilterBar = ({
                                     {o}
                                 </ActivePill>
                             ))}
+                            {q.trim() && (
+                                <ActivePill onClear={() => setQ("")}>“{q.trim()}”</ActivePill>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+}
+
 
 // ───────────────────────────────────────────────────────────────
 // Product Lists (+ animations)
@@ -767,6 +817,7 @@ function QuickViewModal2({ product, onClose, onRFQ }) {
 // RFQ Modal (POST /api/rfq) with gradient header
 // ───────────────────────────────────────────────────────────────
 const RFQModal = ({ product, onClose }) => {
+
     const [loading, setLoading] = useState(false);
     const [ok, setOk] = useState(false);
     const [err, setErr] = useState("");
@@ -962,7 +1013,7 @@ const RFQModal = ({ product, onClose }) => {
 // ───────────────────────────────────────────────────────────────
 // Compare Drawer (Open link kept; matches requirement)
 // ───────────────────────────────────────────────────────────────
-const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
+const CompareDrawer22 = ({ products, compare, onCloseItem, onClear }) => {
     const items = compare
         .map((id) => products.find((p) => p.id === id))
         .filter(Boolean);
@@ -1058,6 +1109,133 @@ const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
     );
 };
 
+const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
+    const items = compare
+        .map((id) => products.find((p) => p.id === id))
+        .filter(Boolean);
+
+    const open = items.length > 0;
+    const progress = Math.min(items.length / 3, 1) * 100;
+
+    return (
+        <div
+            className={[
+                "fixed inset-x-0 bottom-0 z-40 transition-all duration-300",
+                open ? "translate-y-0 opacity-100 pointer-events-auto" : "translate-y-full opacity-0 pointer-events-none",
+            ].join(" ")}
+            aria-hidden={!open}
+        >
+            <div className="mx-auto max-w-6xl rounded-t-3xl border border-neutral-200 bg-white/80 backdrop-blur-md shadow-[0_-12px_40px_-12px_rgba(0,0,0,.25)]">
+                {/* Header */}
+                <div className="px-4 sm:px-6 pt-4">
+                    <div className="flex items-center justify-between">
+                        <div className="inline-flex items-center gap-2">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-neutral-200 shadow-sm">
+                                <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} />
+                                Compare
+                                <span className="text-neutral-500">({items.length}/3)</span>
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={onClear}
+                                className="rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
+                                title="Clear all"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Progress */}
+                    <div className="mt-3 h-1.5 w-full rounded-full bg-neutral-200/70 overflow-hidden">
+                        <div
+                            className="h-full rounded-full transition-all"
+                            style={{ width: `${progress}%`, background: ACCENT }}
+                        />
+                    </div>
+                </div>
+
+                {/* Cards rail */}
+                <div className="px-3 sm:px-5 pb-4 pt-3">
+                    <div className="grid grid-flow-col auto-cols-[82%] sm:auto-cols-[48%] md:auto-cols-[32%] gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                        {items.map((p) => (
+                            <article
+                                key={p.id}
+                                className="group relative snap-start rounded-2xl bg-white ring-1 ring-neutral-200 shadow-md hover:shadow-lg transition"
+                            >
+                                {/* remove */}
+                                <button
+                                    onClick={() => onCloseItem(p.id)}
+                                    className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-neutral-600 ring-1 ring-neutral-200 hover:bg-white"
+                                    title="Remove"
+                                >
+                                    <XIcon className="h-4 w-4" />
+                                </button>
+
+
+                                {/* body */}
+                                <div className="p-3 sm:p-4">
+                                    <Link href={`/products/${p.slug}`} className="block font-semibold leading-tight line-clamp-2 hover:underline">
+                                        {p.name}
+                                    </Link>
+
+                                    {/* chips row */}
+                                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                                        <Chip label={p.hsCode ? `HS ${p.hsCode}` : "—"} />
+                                        <Chip label={p.moqKg ? `${p.moqKg} kg` : "—"} />
+                                        <Chip label={p.leadTimeDays ? `${p.leadTimeDays} d` : "—"} />
+                                        {!!(p.originCountries?.length) && <Chip label={p.originCountries[0]} />}
+                                    </div>
+
+                                    {/* footer actions */}
+                                    <div className="mt-3 flex items-center justify-between">
+                                        <Link
+                                            href={`/products/${p.slug}`}
+                                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900"
+                                        >
+                                            Open <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                        <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
+                                            {firstKeySpec(p)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+
+                    {/* Empty (rarely seen because drawer is hidden when empty) */}
+                    {!items.length && (
+                        <div className="py-10 text-center text-neutral-500 text-sm">Select up to 3 products to compare</div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+function firstKeySpec(p) {
+    if (!p?.specs) return "—";
+    const k = Object.keys(p.specs)[0];
+    if (!k) return "—";
+    return `${pretty(k)}: ${String((p.specs)[k])}`;
+}
+function pretty(k) {
+    return k.replace(/[_\-]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b(\w)/g, (c) => c.toUpperCase());
+}
+const ArrowRight = (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
+        <path d="M5 12h14M13 5l7 7-7 7" />
+    </svg>
+);
+
+const Chip = ({ label }) => (
+    <span className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-700 shadow-[0_2px_10px_-8px_rgba(0,0,0,.4)]">
+        {label}
+    </span>
+);
+
 // ───────────────────────────────────────────────────────────────
 // Shared UI bits
 // ───────────────────────────────────────────────────────────────
@@ -1135,12 +1313,6 @@ const ViewToggle = ({ view, setView }) => (
             <RowsIcon />
         </button>
     </div>
-);
-
-const Badge = ({ children }) => (
-    <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold tracking-wide ring-1 ring-inset bg-neutral-100 ring-neutral-200 text-neutral-700">
-        {children}
-    </span>
 );
 
 const ActivePill = ({ children, onClear }) => (

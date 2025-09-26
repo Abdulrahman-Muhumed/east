@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "../../../../../i18n/navigation";
 import Image from "next/image";
 import { Building, Globe, Smile, Briefcase, DollarSign, MapPin } from "lucide-react";
 import HeroCinematic from "../../../components/blocks/Hero2";
@@ -219,7 +219,7 @@ export default function About2050() {
     const t = useTranslations("about");
 
     return (
-        <div className="min-h-screen bg-white pb-10 text-neutral-900 antialiased selection:bg-yellow-200 selection:text-neutral-900">
+        <div className="min-h-screen bg-white pt-10 text-neutral-900 antialiased selection:bg-yellow-200 selection:text-neutral-900">
             {/* HERO */}
             <HeroCinematic
                 bgImage="/hero2_img1.png"
