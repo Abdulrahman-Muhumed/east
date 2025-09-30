@@ -461,7 +461,16 @@
       "subject": "Subject",
       "message": "Message",
       "send": "Send Message",
-      "sending": "Sending..."
+      "sending": "Sending...",
+      "topicLabel": "Reason",
+      "topicHelp": "Choose where we should route your message.",
+      "topics": {
+        "sales": "Salest",
+        "other": "Other / general"
+      },
+      "errors": {
+        "topicRequired": "Please select a reason."
+      }
     },
     "map": {
       "title": "Office Map"

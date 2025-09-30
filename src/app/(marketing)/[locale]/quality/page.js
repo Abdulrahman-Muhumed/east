@@ -17,32 +17,23 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 function useSectionProgress(threshold = 0.14) {
     const ref = useRef(null);
     const [progress, setProgress] = useState(0);
+
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
-        let raf = 0;
-        const calc = () => {
-            const r = el.getBoundingClientRect();
-            const vh = window.innerHeight || 1;
-            const raw =
-                1 - clamp((r.top + r.height * (1 - threshold)) / (vh + r.height * (1 - threshold)), 0, 1);
-            setProgress(easeOutCubic(clamp(raw, 0, 1)));
-        };
-        const onScroll = () => {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(calc);
-        };
-        calc();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll);
-        return () => {
-            cancelAnimationFrame(raf);
-            window.removeEventListener("scroll", onScroll);
-            window.removeEventListener("resize", onScroll);
-        };
+
+        const observer = new IntersectionObserver(
+            ([entry]) => setProgress(entry.intersectionRatio),
+            { threshold: Array.from({ length: 101 }, (_, i) => i / 100) }
+        );
+
+        observer.observe(el);
+        return () => observer.disconnect();
     }, [threshold]);
+
     return { ref, progress };
 }
+
 
 const Enter = ({ progress, children, direction = "up", delay = 0 }) => {
     const t = clamp((progress - delay) / (1 - delay || 1), 0, 1);
@@ -78,7 +69,7 @@ export default function QualityPage() {
     const rotating = t.raw("hero.rotating");
 
     return (
-        <div className="min-h-screen pt-10 bg-neutral-50 text-neutral-900 antialiased">
+        <div className="min-h-screen text-neutral-900">
             <Hero2
                 variant="image"
                 bgImage="/quality/quality1.png"
@@ -86,6 +77,7 @@ export default function QualityPage() {
                 accentColor="#ffd028"
                 kicker={t("hero.kicker")}
                 title={t("hero.title")}
+                hasActionbtn='no'
                 lastWord={t("hero.lastWord")}
                 hasStats=""
                 subtitle={t("hero.subtitle")}
@@ -133,40 +125,69 @@ const Standards = () => {
     );
 };
 
+const NodeIndex = ({ value }) => {
+    const c = brand.colors.primary;
+    return (
+        <div
+            className="text-2xl font-mono hover:bg-[#1a2336] duration-500 font-bold w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-2xs flex-shrink-0"
+            style={{ border: `1px solid ${c}`, color: c }}
+        >
+        </div>
+    );
+};
+
 const Process = () => {
     const t = useTranslations("quality.process");
     const { ref, progress } = useSectionProgress();
     const steps = t.raw("steps");
 
     return (
-        <section ref={ref} className="relative py-18 sm:py-24 bg-neutral-50 overflow-hidden">
+        <section ref={ref} className="relative py-24 sm:py-32 bg-neutral-50 text-neutral-900 overflow-hidden">
             <div className="container mx-auto px-4 sm:px-6">
-                <Enter progress={progress} direction="up">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center">
+                {/* Header */}
+                <Enter progress={progress} delay={0}>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-center">
                         {t("title")}
                     </h2>
+                    {/* keep it minimal; no extra subtitle to stay on-brand */}
                 </Enter>
 
-                <div className="relative mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* Cards grid (production-light) */}
+                <div className="relative mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {Array.isArray(steps) &&
                         steps.map((s, i) => (
-                            <div
-                                key={s.k}
-                                className="p-1.5 rounded-[2rem] from-transparent to-transparent hover:from-white/50 hover:to-white/50 bg-gradient-to-br transition-all duration-500 overflow-hidden"
-                            >
-                                <Enter progress={progress} direction={i % 2 === 0 ? "left" : "right"} delay={0.05 * i}>
-                                    <div className="relative rounded-[1.75rem] border border-neutral-200 bg-white p-6 transition-all h-full hover:shadow-xl group">
-                                        <div
-                                            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                            style={{ background: "radial-gradient(circle at 100% 0%, #ffd028 0%, transparent 50%)" }}
-                                        />
-                                        <div className="relative z-10 flex items-center justify-between">
-                                            <AnimatedNumber value={i + 1} progress={progress} delay={0.1 * i} />
-                                            <span className="text-sm font-semibold text-neutral-500">{t("stepLabel")} {i + 1}</span>
+                            <div key={s.k} className="h-full">
+                                <Enter progress={progress} delay={0.05 + 0.08 * i}>
+                                    {/* Card design from sample, adapted to your neutrals/brand */}
+                                    <article
+                                        className="
+                                            p-8 rounded-2xl border border-neutral-200 bg-white h-full
+                                            shadow-sm transition-all duration-300 transform
+                                            group hover:shadow-lg hover:-translate-y-1
+                                        "
+                                    >
+                                        {/* top row: step label + colored index */}
+                                        <div className="flex items-start justify-between ">
+                                            <span className="text-sm font-mono font-semibold text-neutral-500 uppercase tracking-widest pt-1">
+                                                {t("stepLabel")} {i + 1}
+                                            </span>
+                                            <NodeIndex value={i + 1} />
                                         </div>
-                                        <h4 className="text-base font-semibold mt-4">{s.t}</h4>
-                                        <p className="mt-1 text-sm text-neutral-600">{s.d}</p>
-                                    </div>
+
+                                        {/* content */}
+                                        <h4 className="text-lg sm:text-xl font-bold text-neutral-900">
+                                            {s.t}
+                                        </h4>
+                                        <p className="mt-3 text-sm sm:text-base text-neutral-600 leading-relaxed">
+                                            {s.d}
+                                        </p>
+
+                                        {/* subtle accent focus line on hover (no color change) */}
+                                        <span
+                                            className="block mt-6 h-[3px] w-0 group-hover:w-full transition-all duration-500 rounded-full"
+                                            style={{ background: `linear-gradient(90deg, ${brand.colors.primary}, ${brand.colors.accent})` }}
+                                        />
+                                    </article>
                                 </Enter>
                             </div>
                         ))}
@@ -249,6 +270,7 @@ const DocsSampling = () => {
                             src="/quality/quality2.png"
                             alt="Sampling and documentation"
                             fill
+                            loading="lazy"
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                             sizes="(max-width:768px) 100vw, 50vw"
                         />
@@ -305,7 +327,7 @@ const CTA = () => {
         <section ref={ref} className="relative overflow-hidden py-16 sm:py-20">
             <div className="relative container mx-auto px-4 sm:px-6">
                 <Enter progress={progress} direction="up">
-                    <div className="rounded-[2rem] border border-neutral-200 bg-white/70 backdrop-blur-lg p-8 sm:p-10 shadow-lg">
+                    <div className="rounded-[2rem] border border-neutral-200 bg-white/70  p-8 sm:p-10 shadow-lg">
                         <div className="grid gap-6 md:grid-cols-2 md:items-center">
                             <div>
                                 <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950">
@@ -371,7 +393,7 @@ const AnimatedNumber = ({ value, progress, delay }) => {
 
 const StatCard = ({ label, value }) => (
     <div
-        className="group relative overflow-hidden rounded-[2rem] border border-neutral-200 bg-white/70 backdrop-blur-sm
+        className="group relative overflow-hidden rounded-[2rem] border border-neutral-200 bg-white/70 
                px-6 py-5 shadow-[0_6px_24px_-18px_rgba(0,0,0,0.25)]
                transition-all duration-400 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.35)]"
     >
@@ -391,6 +413,7 @@ const CertCard = ({ cert, viewText }) => (
                 src={cert.img || "/quality/cert-placeholder.png"}
                 alt={cert.name}
                 fill
+                loading="lazy"
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 sizes="(max-width:768px) 100vw, 33vw"
             />

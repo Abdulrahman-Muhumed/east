@@ -15,7 +15,7 @@
     "legalTerms": "Shuruudo",
     "legalPrivacy": "Shuruudo & Qarsoodi",
     "legalContact": "La xidhiidh",
-    "rights": "Xuquuqda oo dhan waa la ilaalinayaa."
+    "rights": ""
   },
   "home": {
     "hero": {
@@ -357,7 +357,16 @@
       "subject": "Mawduuc",
       "message": "Fariin",
       "send": "Dir Fariinta",
-      "sending": "Diraya..."
+      "sending": "Diraya...",
+      "topicLabel": "Sababta",
+      "topicHelp": "Dooro halka fariinta loo gudbiyo.",
+      "topics": {
+        "sales": "Iib-ka",
+        "other": "Arrimo kale / Guud"
+      },
+      "errors": {
+        "topicRequired": "Fadlan dooro sabab."
+      }
     },
     "map": {
       "title": "Khariidadda Xafiiska"

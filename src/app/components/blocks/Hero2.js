@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { brand } from "../../config/brand";
-
+import { Link} from "../../../../i18n/navigation"; // Hoggaan-style wrapper
 /**
  * HERO CINEMATIC (FIXED & UPGRADED)
  * - CSS animations moved to a standard <style> tag for universal compatibility
@@ -36,35 +36,11 @@ export default function HeroCinematic({
     const reduced = usePrefersReducedMotion();
     const [scrollY, setScrollY] = useState(0);
 
-    useEffect(() => {
-        if (reduced) return;
-        const handleScroll = () => {
-            setScrollY(window.scrollY);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [reduced]);
-
-    const bgParallaxStyle = bgImage && !reduced ? { transform: `translate3d(0, ${scrollY * 0.5}px, 0)` } : {};
     return (
         <section
-            className={`relative overflow-hidden bg-white text-neutral-900 ${className}`}
+            className={`relative overflow-hidden bg-white pt-10 text-neutral-900 ${className}`}
             aria-label="Hero"
         >
-            {/* Background with parallax effect */}
-            {bgImage && (
-                <div
-                    className="absolute inset-0 -z-20 transition-transform duration-100 ease-out"
-                    style={{
-                        backgroundImage: `url(${bgImage})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        ...bgParallaxStyle,
-                    }}
-                />
-            )}
-
             {/* CONTENT */}
             <div className={`relative container mx-auto px-4 sm:px-6 flex py-5 lg:pt-24 lg:pb-10 md:pt-24 md:pb-10 flex-col ${alignCls}`}>
                 {/* Eyebrow */}
@@ -94,7 +70,7 @@ export default function HeroCinematic({
                     <Reveal delay={200}>
                         <div className={`mt-9 flex flex-wrap gap-3 ${align === "center" ? "justify-center" : ""}`}>
                             {ctas.map((c) => (
-                                <a
+                                <Link
                                     key={c.label}
                                     href={c.href || "#"}
                                     className={c.primary ? "BtnPrimaryClean" : "BtnGhostClean"}
@@ -107,7 +83,7 @@ export default function HeroCinematic({
                                     }}
                                 >
                                     {c.label}
-                                </a>
+                                </Link>
                             ))}
                         </div>
                     </Reveal>

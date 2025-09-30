@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Link } from "../../../../../../i18n/navigation";
 import { getProductBySlug } from "../../../../data/products";
 import { brand } from "../../../../config/brand";
+import LoaderOverlay from "../../../../components/blocks/LoaderOverlay";
+
 import {
     Download,
     ChevronRight,
@@ -24,7 +26,7 @@ import {
     Pill,
     HeartHandshake,
 } from "lucide-react";
-import { motion, useScroll, useTransform} from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 /* BRAND */
@@ -52,6 +54,8 @@ export default function ProductDetailPage() {
     const router = useRouter();
 
     const product = useMemo(() => getProductBySlug?.(slug) || null, [slug]);
+
+    const [loading, setLoading] = useState(false);
 
     const [activeTab, setActiveTab] = useState("specifications");
     const [isRFQModalOpen, setIsRFQModalOpen] = useState(false);
@@ -512,13 +516,16 @@ export default function ProductDetailPage() {
             </div>
 
             {/* RFQ Modal */}
-            {isRFQModalOpen && <RFQModal product={product} onClose={() => setIsRFQModalOpen(false)} />}
+            {isRFQModalOpen && <RFQModal product={product} onClose={() => setIsRFQModalOpen(false)} onBusy={setLoading} />}
+
+            <LoaderOverlay show={loading} />
+
         </div>
     );
 }
 
 /* MODAL + SMALL COMPONENTS */
-function RFQModal({ product, onClose }) {
+function RFQModal({ product, onClose, onBusy = () => { } }) {
     const t = useTranslations("Product");
     const [form, setForm] = useState({
         company: "",
@@ -530,6 +537,7 @@ function RFQModal({ product, onClose }) {
         destination: "",
         message: "",
     });
+
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
     const [error, setError] = useState("");
@@ -537,19 +545,31 @@ function RFQModal({ product, onClose }) {
     const submit = async (e) => {
         e.preventDefault();
         setSending(true);
+        onBusy(true);
         setError("");
         try {
             const res = await fetch("/api/rfq", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ product: product?.slug, productName: product?.name, ...form }),
+                body: JSON.stringify({
+                    product: product?.slug,
+                    productId2: product?.id2,          // <-- goes to API
+                    productName: product?.name,
+                    originUrl: typeof window !== "undefined" ? window.location.href : "",
+                    ...form,
+                }),
             });
-            if (!res.ok) throw new Error("Failed to send request");
-            setSent(true);
-        } catch (err) {
-            setError(err?.message || "Something went wrong");
+
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || "Failed to send request");
+
+            setSent(true) ;
+            setOk(true);
+        } catch (error) {
+            setError(error?.message || "Something went wrong");
         } finally {
-            setSending(false);
+            setLoading(false);
+            onBusy(false);
         }
     };
 
@@ -560,21 +580,37 @@ function RFQModal({ product, onClose }) {
     }, [onClose]);
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto p-4 bg-black/40 grid place-items-center">
+        <div className="fixed inset-0 z-50 overflow-y-auto  bg-black/40 grid place-items-center">
             <motion.div
                 initial={{ opacity: 0, y: 16, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 16, scale: 0.98 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 relative border border-gray-200"
+                className="bg-white rounded-3xl shadow-2xl max-w-lg w-full  relative border border-gray-200"
             >
-                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors" title="Close">
-                    <X size={20} />
-                </button>
+                <div
+                    className="flex items-center justify-between px-3 sm:px-5 py-3 rounded-t-3xl"
+                    style={{
+                        background: `linear-gradient(135deg, ${PRIMARY} 0%, rgba(11,42,107,0.85) 35%, ${ACCENT} 100%)`,
+                        color: "#fff",
+                    }}
+                >
+                    <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm sm:text-base font-extrabold tracking-tight whitespace-nowrap">
+                            {product.name}
+                        </span>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 hover:bg-white/25 border border-white/25"
+                        title="Close"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
 
                 {!sent ? (
-                    <form onSubmit={submit} className="space-y-6">
-                        <h2 className="text-2xl font-bold">{t("rfq.for", { name: product?.name })}</h2>
+                    <form onSubmit={submit} className="space-y-6 p-6">
                         {error && <p className="text-red-600 text-sm">{error}</p>}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Input label={t("fields.company")} value={form.company} onChange={(v) => setForm({ ...form, company: v })} required />
@@ -634,6 +670,277 @@ function RFQModal({ product, onClose }) {
     );
 }
 
+function RFQModal2({ product, onClose, onBusy = () => { } }) {
+
+    const [loading, setLoading] = useState(false);
+    const [ok, setOk] = useState(false);
+    const [err, setErr] = useState("");
+    const [form, setForm] = useState({
+        company: "",
+        contactName: "",
+        email: "",
+        quantity: "",
+        unit: product?.rfqDefaults?.unit || "kg",
+        incoterm: product?.incoterms?.[0] || "FOB",
+        destination: "",
+        message: "",
+    });
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        onBusy(true);
+        setErr("");
+        try {
+            const res = await fetch("/api/rfq", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product: product?.slug,
+                    productId2: product?.id2,          // <-- goes to API
+                    productName: product?.name,
+                    originUrl: typeof window !== "undefined" ? window.location.href : "",
+                    ...form,
+                }),
+            });
+
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || "Failed to send request");
+
+            // Optional: keep/show the reference ID from server
+            // json.referenceId
+            setOk(true);
+        } catch (error) {
+            setErr(error?.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+            onBusy(false);
+        }
+    };
+
+
+
+    return (
+        <Modal onClose={onClose} title="Request a Quote" right={product?.name}>
+            {!ok ? (
+                <form onSubmit={submit} className="grid gap-4">
+                    {err && (
+                        <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                            {err}
+                        </div>
+                    )}
+
+                    <div className="rounded-xl border border-neutral-200 bg-white p-4 sm:p-5 shadow-md">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Field label="Company" required>
+                                <input
+                                    value={form.company}
+                                    onChange={(e) => setForm({ ...form, company: e.target.value })}
+                                    className="Input"
+                                />
+                            </Field>
+                            <Field label="Contact name" required>
+                                <input
+                                    value={form.contactName}
+                                    onChange={(e) =>
+                                        setForm({ ...form, contactName: e.target.value })
+                                    }
+                                    className="Input"
+                                />
+                            </Field>
+                            <Field label="Email" required>
+                                <input
+                                    type="email"
+                                    value={form.email}
+                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                    className="Input"
+                                />
+                            </Field>
+                            <Field label="Destination port/city">
+                                <input
+                                    value={form.destination}
+                                    onChange={(e) =>
+                                        setForm({ ...form, destination: e.target.value })
+                                    }
+                                    className="Input"
+                                />
+                            </Field>
+                            <Field label="Quantity" required>
+                                <input
+                                    value={form.quantity}
+                                    onChange={(e) =>
+                                        setForm({ ...form, quantity: e.target.value })
+                                    }
+                                    className="Input"
+                                />
+                            </Field>
+                            <Field label="Unit">
+                                <Select
+                                    value={form.unit}
+                                    onChange={(e) =>
+                                        setForm({ ...form, unit: e.target.value })
+                                    }
+                                    options={["kg", "ton"]}
+                                />
+                            </Field>
+                            <Field label="Incoterm">
+                                <Select
+                                    value={form.incoterm}
+                                    onChange={(e) =>
+                                        setForm({ ...form, incoterm: e.target.value })
+                                    }
+                                    options={["FOB", "CFR", "CIF", "EXW"]}
+                                />
+                            </Field>
+                            <div className="sm:col-span-2">
+                                <Field label="Message (optional)">
+                                    <textarea
+                                        rows={4}
+                                        value={form.message}
+                                        onChange={(e) =>
+                                            setForm({ ...form, message: e.target.value })
+                                        }
+                                        className="Input"
+                                    />
+                                </Field>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:justify-end gap-2 pt-3">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="BtnSecondary w-full sm:w-auto"
+                            >
+                                Cancel
+                            </button>
+                            <button disabled={loading} className="BtnPrimary w-full sm:w-auto">
+                                {loading ? "Sending…" : "Send request"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <style jsx>{`
+            .Input {
+              width: 100%;
+              border-radius: 0.75rem;
+              border: 1px solid #e5e5e5;
+              background: white;
+              padding: 0.6rem 0.8rem;
+              transition: box-shadow 0.15s ease, border-color 0.15s ease;
+            }
+            .Input:focus {
+              outline: none;
+              border-color: ${ACCENT};
+              box-shadow: 0 0 0 3px rgba(255, 208, 40, 0.25);
+            }
+            .BtnSecondary {
+              border: 1px solid #e5e5e5;
+              padding: 0.5rem 0.9rem;
+              border-radius: 0.75rem;
+              background: white;
+            }
+            .BtnPrimary {
+              position: relative;
+              padding: 0.5rem 0.9rem;
+              border-radius: 0.75rem;
+              font-weight: 600;
+              color: #111;
+              transition: transform 0.15s ease;
+              overflow: hidden;
+              isolation: isolate;
+            }
+            .BtnPrimary::before {
+              content: "";
+              position: absolute;
+              inset: 0;
+              border-radius: 0.75rem;
+              background: linear-gradient(90deg, ${ACCENT} 0%, #ffe88b 100%);
+              box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.35);
+              z-index: -1;
+            }
+          `}</style>
+                </form>
+            ) : (
+                <div className="grid place-items-center gap-2 py-8">
+                    <CheckCircle className="h-10 w-10 text-green-600" />
+                    <div className="text-lg font-semibold">Request sent</div>
+                    <div className="text-sm text-neutral-600">We’ll get back to you shortly.</div>
+                    <button onClick={onClose} className="mt-2 BtnSecondary">
+                        Close
+                    </button>
+                </div>
+            )}
+        </Modal>
+    );
+};
+
+const Modal = ({ children, onClose, title, right }) => {
+    useEffect(() => {
+        const onKey = (e) => e.key === "Escape" && onClose();
+        document.addEventListener("keydown", onKey);
+        return () => document.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
+    return (
+        <div className="fixed inset-0 z-50">
+            <motion.div
+                className="absolute inset-0 bg-black/40"
+                onClick={onClose}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+            />
+            <div className="absolute inset-0 grid place-items-center p-3 sm:p-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.985 }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full max-w-3xl overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-2xl"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={title || "Dialog"}
+                >
+                    {/* Header bar with gradient covering full width and top edge */}
+                    <div
+                        className="flex items-center justify-between px-3 sm:px-5 py-3"
+                        style={{
+                            background: `linear-gradient(135deg, ${PRIMARY} 0%, rgba(11,42,107,0.85) 35%, ${ACCENT} 100%)`,
+                            color: "#fff",
+                        }}
+                    >
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-sm sm:text-base font-extrabold tracking-tight whitespace-nowrap">
+                                {title}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 min-w-0">
+                            {right && (
+                                <span className="max-w-[55vw] sm:max-w-[28rem] truncate rounded-md border border-white/20 bg-white/10 px-2 py-1 text-xs sm:text-sm font-semibold backdrop-blur">
+                                    {right}
+                                </span>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 hover:bg-white/25 border border-white/25"
+                                title="Close"
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Body — scrollable on small screens */}
+                    <div className="max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+                        {children}
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
 /* Inputs */
 const Input = ({ label, value, onChange, required, type = "text" }) => (
     <label className="grid gap-1 text-sm">
@@ -692,8 +999,7 @@ const Badge = ({ tone = "soft", children }) => {
 };
 
 /* Helpers */
-const pretty = (k) =>
-{
+const pretty = (k) => {
     String(k)
         .replace(/[_\-]/g, " ")
         .replace(/([a-z])([A-Z])/g, "$1 $2")

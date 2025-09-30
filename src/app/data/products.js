@@ -12,6 +12,7 @@ export const PRODUCTS = [
   // ————————————————— Arabic Gum —————————————————
   {
     id: "arabic-gum-grade-1",
+    id2: "EPRD-100500",
     slug: "arabic-gum-grade-one",
     name: "Arabic Gum — Grade One",
     category: "Gum Resins",
@@ -45,6 +46,7 @@ export const PRODUCTS = [
 
   {
     id: "arabic-gum-grade-2",
+    id2: "EPRD-100501",
     slug: "arabic-gum-grade-2",
     name: "Arabic Gum — Grade 2",
     category: "Gum Resins",
@@ -79,8 +81,9 @@ export const PRODUCTS = [
   // ————————————————— Myrrh —————————————————
   {
     id: "myrrh-gum-grade-one",
+    id2: "EPRD-100502",
     slug: "myrrah-gum-grade-one",
-    name: "Myrrh — Grade One",
+    name: "Myrrh Gum — Grade One",
     category: "Gum Resins",
     summary:
       "Clean reddish- to yellow-brown resin exudate; suitable for perfumery, incense, oral care and traditional applications.",
@@ -103,7 +106,7 @@ export const PRODUCTS = [
     incoterms: ["FOB", "CIF"],
     leadTimeDays: 12,
     images: [
-      "/product/arabic_gum_g2.png",
+      "/product/product_myrrah1.png",
     ],
     datasheetUrl: null,
     rfqDefaults: { unit: "kg" },
@@ -111,8 +114,9 @@ export const PRODUCTS = [
 
   {
     id: "myrrh-gum-grade-two",
+     id2: "EPRD-100503",
     slug: "myrrah-gum-grade-two",
-    name: "Myrrh — Grade Two",
+    name: "Myrrh Gum — Grade Two",
     category: "Gum Resins",
     summary:
       "Commercial grade myrrh; same compositional ranges with wider visual variance; suited to incense/perfumery bases.",
@@ -135,7 +139,7 @@ export const PRODUCTS = [
     incoterms: ["FOB", "CIF"],
     leadTimeDays: 12,
     images: [
-      "/product/arabic_gum_g2.png",
+      "/product/product_myrrah2.png",
     ],
     datasheetUrl: null,
     rfqDefaults: { unit: "kg" },
@@ -144,8 +148,9 @@ export const PRODUCTS = [
   // ————————————————— Opoponax —————————————————
   {
     id: "opoponax-gum",
+    id2: "EPRD-100504",
     slug: "oppoponax-gum",
-    name: "Opoponax — Standard",
+    name: "Opoponax Gum",
     category: "Gum Resins",
     summary:
       "Warm balsamic, myrrh-like aroma; traditional perfumery and incense resin with defined resin/gum/oil ranges.",
@@ -170,7 +175,7 @@ export const PRODUCTS = [
     leadTimeDays: 15,
     images: [
       // site page doesn't show a file name, keep local/placeholder if you have assets
-      "/product/product_opoponax.png",
+      "/product/product_oppoponax.png",
     ],
     datasheetUrl: null,
     rfqDefaults: { unit: "kg" },
@@ -179,6 +184,7 @@ export const PRODUCTS = [
   // ————————————————— Frankincense —————————————————
   {
     id: "frankincense-resin",
+     id2: "EPRD-100505",
     slug: "frankincense-rasin",
     name: "Frankincense — Resin",
     category: "Gum Resins",
@@ -203,7 +209,7 @@ export const PRODUCTS = [
     incoterms: ["FOB", "CIF"],
     leadTimeDays: 10,
     images: [
-      "/product/arabic_gum_g2.png",
+      "/product/product_frankinecense.png",
     ],
     datasheetUrl: null,
     rfqDefaults: { unit: "kg" },

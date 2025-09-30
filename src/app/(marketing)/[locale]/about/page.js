@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "../../../../../i18n/navigation";
 import Image from "next/image";
-import { Building, Globe, Smile, Briefcase, DollarSign, MapPin } from "lucide-react";
+import { Building, Briefcase, DollarSign, MapPin, EyeIcon, StarIcon, TargetIcon, Dna } from "lucide-react";
 import HeroCinematic from "../../../components/blocks/Hero2";
 import { brand } from "../../../config/brand";
 import { useTranslations } from "next-intl";
@@ -22,6 +22,7 @@ const clamp = (n, a, b) => Math.min(Math.max(n, a), b);
 /**
  * Hook: section progress (0 → 1)
  */
+
 function useSectionProgress(threshold = 0.15) {
     const ref = useRef(null);
     const [progress, setProgress] = useState(0);
@@ -30,34 +31,16 @@ function useSectionProgress(threshold = 0.15) {
         const el = ref.current;
         if (!el) return;
 
-        let raf = 0;
-        const calc = () => {
-            const r = el.getBoundingClientRect();
-            const vh = window.innerHeight || 1;
-            const raw =
-                1 -
-                clamp(
-                    (r.top + r.height * (1 - threshold)) / (vh + r.height * (1 - threshold)),
-                    0,
-                    1
-                );
-            const eased = easeOutCubic(clamp(raw, 0, 1));
-            setProgress(eased);
-        };
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                const ratio = entry.intersectionRatio;
+                setProgress(ratio);
+            },
+            { threshold: Array.from({ length: 101 }, (_, i) => i / 100) }
+        );
 
-        const onScroll = () => {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(calc);
-        };
-
-        calc();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll);
-        return () => {
-            cancelAnimationFrame(raf);
-            window.removeEventListener("scroll", onScroll);
-            window.removeEventListener("resize", onScroll);
-        };
+        observer.observe(el);
+        return () => observer.disconnect();
     }, [threshold]);
 
     return { ref, progress };
@@ -66,31 +49,6 @@ function useSectionProgress(threshold = 0.15) {
 function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
 }
-
-/**
- * Generic 3D Parallax Group
- */
-const Parallax3D = ({ progress, children }) => {
-    return (
-        <div
-            className="relative w-full h-full [perspective:1200px]"
-            style={{ transformStyle: "preserve-3d" }}
-        >
-            {React.Children.map(children, (child, i) => {
-                if (!React.isValidElement(child)) return child;
-                const depth = child.props.depth ?? 0;
-                const driftX = ((i % 2 ? -1 : 1) * (1 - progress) * Math.abs(depth)) / 2;
-                const driftY = ((i % 3 ? 1 : -1) * (1 - progress) * Math.abs(depth)) / 3;
-                const translateZ = depth * (1 - progress) * 40;
-                const style = {
-                    transform: `translate3d(${driftX}px, ${driftY}px, ${translateZ}px)`,
-                    willChange: "transform",
-                };
-                return React.cloneElement(child, { style: { ...(child.props.style || {}), ...style } });
-            })}
-        </div>
-    );
-};
 
 const Plane = ({ className = "", style = {}, children }) => (
     <div className={`absolute ${className}`} style={style}>
@@ -167,7 +125,7 @@ const Tile3D = ({ icon, title, children, hue = 48 }) => {
             <div className="relative z-10">
                 <div
                     className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full text-neutral-900 ring-4 ring-neutral-100/60"
-                    style={{ backgroundColor: `hsl(${hue} 100% 85%)`, boxShadow: `0 0 22px -8px hsl(${hue} 100% 70%)` }}
+                    style={{ backgroundColor: `hsl(${hue} 100% 85%)` }}
                 >
                     {icon}
                 </div>
@@ -187,31 +145,6 @@ const Badge = ({ text }) => (
     </span>
 );
 
-const TargetIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="6" />
-        <circle cx="12" cy="12" r="2" />
-    </svg>
-);
-const EyeIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-        <circle cx="12" cy="12" r="3" />
-    </svg>
-);
-const StarIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7.82 14.14 3 9.27l6.91-1.01L12 2z" />
-    </svg>
-);
-const LabIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M9 3v6a6 6 0 1 0 6 0V3" />
-        <path d="M9 3h6" />
-    </svg>
-);
-
 /**
  * ABOUT PAGE — translated
  */
@@ -219,7 +152,7 @@ export default function About2050() {
     const t = useTranslations("about");
 
     return (
-        <div className="min-h-screen bg-white pt-10 text-neutral-900 antialiased selection:bg-yellow-200 selection:text-neutral-900">
+        <div className="min-h-screen font-sans text-slate-900 relative antialiased">
             {/* HERO */}
             <HeroCinematic
                 bgImage="/hero2_img1.png"
@@ -259,20 +192,17 @@ const SectionOrigin = () => {
     return (
         <section ref={ref} className="relative py-24 sm:py-32 bg-neutral-50 overflow-hidden">
             <div className="pointer-events-none absolute inset-0">
-                <Parallax3D progress={progress}>
-                    <Plane depth={-2} className="left-[5%] top-[10%] w-24 h-24 opacity-30">
-                        <img src="/east_image2.png" alt="" className="w-full h-full object-contain" />
-                    </Plane>
-                    <Plane depth={-3} className="right-[6%] bottom-[12%] w-36 h-36 opacity-30">
-                        <img src="/about/about4.png" alt="" className="w-full h-full object-contain" />
-                    </Plane>
-                </Parallax3D>
+
+                <Plane depth={-2} className="left-[5%] top-[10%] w-24 h-24 opacity-30">
+                    <Image src="/east_image2.png" alt="" loading="lazy" fill className="w-full h-full object-contain" />
+                </Plane>
+
             </div>
 
             <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
                 <Enter progress={progress} direction="right">
                     <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200">
-                        <Image src="/about/about1.png" alt="East African origin landscapes" fill className="object-cover" />
+                        <Image src="/about/about1.png" alt="East African origin landscapes" loading="lazy" fill className="object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent" />
                     </div>
                 </Enter>
@@ -295,11 +225,11 @@ const SectionQuality = () => {
     return (
         <section ref={ref} className="relative py-24 sm:py-32 overflow-hidden">
             <div className="pointer-events-none absolute inset-0">
-                <Parallax3D progress={progress}>
-                    <Plane depth={-2} className="right-0 top-0 w-64 h-64 opacity-30">
-                        <img src="/about/about5.png" alt="" className="w-full h-full object-contain" />
-                    </Plane>
-                </Parallax3D>
+
+                <Plane depth={-2} className="right-0 top-0 w-64 h-64 opacity-30">
+                    <img src="/about/about5.png" alt="" className="w-full h-full object-contain" />
+                </Plane>
+
             </div>
 
             <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
@@ -309,7 +239,7 @@ const SectionQuality = () => {
                         <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">{t("title")}</h2>
                         <p className="mt-4 text-neutral-600">{t("body")}</p>
                         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <Tile3D hue={210} icon={<LabIcon />} title={t("tiles.labChecks.title")}>
+                            <Tile3D hue={210} icon={<Dna />} title={t("tiles.labChecks.title")}>
                                 {t("tiles.labChecks.body")}
                             </Tile3D>
                             <Tile3D hue={160} icon={<EyeIcon />} title={t("tiles.traceability.title")}>
@@ -324,7 +254,7 @@ const SectionQuality = () => {
 
                 <Enter progress={progress} direction="left" delay={0.12}>
                     <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200">
-                        <Image src="/about/about2.png" alt="Quality control and lab verification" fill className="object-cover" />
+                        <Image src="/about/about2.png" alt="Quality control and lab verification" loading="lazy" fill className="object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent" />
                     </div>
                 </Enter>
@@ -341,7 +271,7 @@ const SectionLogistics = () => {
             <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
                 <Enter progress={progress} direction="right">
                     <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-neutral-200">
-                        <Image src="/about/about3.png" alt="Warehouse and export operations" fill className="object-cover" />
+                        <Image src="/about/about3.png" alt="Warehouse and export operations" loading="lazy" fill className="object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-white/15 to-transparent" />
                     </div>
                 </Enter>
@@ -402,7 +332,7 @@ const LogiItem = ({ icon, text }) => {
 
     return (
         <div
-            className="group rounded-2xl border border-neutral-200/50 bg-white/50 backdrop-blur-md p-4 
+            className="group rounded-2xl border border-neutral-200/50 bg-white/50 p-4 
                  shadow-[0_4px_16px_-8px_rgba(0,0,0,0.1)] transition-all duration-300
                  hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.15)] hover:bg-white
                  flex items-center gap-3"
@@ -419,15 +349,6 @@ const SectionPrinciples = () => {
     const values = t.raw("values.list");
     return (
         <section ref={ref} className="relative py-20 sm:py-24 overflow-hidden">
-            <div className="pointer-events-none absolute inset-x-0 -top-20 h-[320px] opacity-30">
-                <div
-                    className="mx-auto h-full w-[80%] rounded-full blur-3xl"
-                    style={{
-                        background: `radial-gradient(circle at 50% 50%, ${YELLOW} 0%, transparent 60%)`,
-                    }}
-                />
-            </div>
-
             <div className="container mx-auto px-4 sm:px-6">
                 <Enter progress={progress} direction="up">
                     <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-center">
@@ -468,15 +389,22 @@ const SectionCompany = () => {
     return (
         <div
             ref={ref}
-            className="min-h-screen flex items-center justify-center font-sans p-4"
-            style={{
-                backgroundImage: "url('/about/about_bg.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-            }}
+            className="relative  min-h-screen flex items-center justify-center font-sans p-4"
         >
-            <section className="relative py-20 sm:py-24 bg-white/70 overflow-hidden rounded-3xl backdrop-blur-sm p-8 shadow-xl max-w-7xl mx-auto">
+
+            <Image
+                src="/about/about_bg.jpg"        // use WebP/AVIF if possible
+                alt=""                             // decorative
+                fill
+                priority={false}
+                fetchPriority="low"
+                quality={60}
+                placeholder="blur"
+                blurDataURL="/about/about_bg_blur.jpg" // tiny blur thumb (<=1–2KB)
+                sizes="100vw"
+                className="pointer-events-none select-none object-cover will-change-transform [transform:translateZ(0)] opacity-60"
+            />
+            <section className="relative py-20 sm:py-24 bg-white/70 overflow-hidden rounded-3xl p-8 shadow-xl max-w-7xl mx-auto">
                 <div className="container mx-auto px-4 sm:px-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-20">
                         {/* Left: Description */}
@@ -530,7 +458,7 @@ const SectionCTA = () => {
         <section ref={ref} className="relative overflow-hidden py-16 sm:py-20">
             <div className="relative container mx-auto px-4 sm:px-6">
                 <Enter progress={progress} direction="up">
-                    <div className="rounded-3xl border border-neutral-200 bg-white/70 backdrop-blur-lg p-8 sm:p-10 shadow-lg">
+                    <div className="rounded-3xl border border-neutral-200 bg-white/70 p-8 sm:p-10 shadow-lg">
                         <div className="grid gap-6 md:grid-cols-2 md:items-center">
                             <div>
                                 <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: BLUE }}>
@@ -556,7 +484,7 @@ const SectionCTA = () => {
 
 const InfoCard = ({ icon, label, value, accent }) => (
     <div
-        className="group relative overflow-hidden rounded-2xl border border-neutral-200/50 bg-white/30 backdrop-blur-md
+        className="group relative overflow-hidden rounded-2xl border border-neutral-200/50 bg-white/30 
                p-5 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-0.5
                hover:shadow-[0_12px_36px_-18px_rgba(0,0,0,0.2)] flex flex-col items-start"
     >

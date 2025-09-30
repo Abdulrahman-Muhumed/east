@@ -8,6 +8,9 @@ import Hero from "../../../components/blocks/Hero2";
 import { listProducts } from "../../../data/products";
 import { brand } from "../../../config/brand";
 import { useTranslations } from "next-intl";
+import { SearchIcon, MailIcon, XIcon, CheckCircle, EyeIcon, GlobeIcon, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import LoaderOverlay from "../../../components/blocks/LoaderOverlay";
+
 // ───────────────────────────────────────────────────────────────
 // Brand
 // ───────────────────────────────────────────────────────────────
@@ -63,7 +66,7 @@ export default function ProductsPage() {
         const needle = q.trim().toLowerCase();
         if (needle) {
             list = list.filter((p) =>
-                [p.name, p.summary, p.hsCode, p.slug]
+                [p.name, p.summary, p.hsCode, p.slug, p.id2]
                     .filter(Boolean)
                     .some((txt) => String(txt).toLowerCase().includes(needle))
             );
@@ -110,6 +113,7 @@ export default function ProductsPage() {
 
     return (
         <div className="min-h-screen bg-white text-neutral-900">
+
             <Hero
                 variant="image"
                 bgImage="/product_bg.png"
@@ -154,23 +158,13 @@ export default function ProductsPage() {
                     view === "grid" ? <SkeletonGrid /> : <SkeletonTable />
                 ) : filtered.length === 0 ? (
                     <h1 className="text-center text-neutral-500 py-12">Nothing</h1>
-                ) : view === "grid" ? (
-                    <GridList
-                        items={filtered}
-                        onQuickView={setQuickProduct}
-                        onRFQ={setRfqProduct}
-                        compare={compare}
-                        toggleCompare={toggleCompare}
-                    />
-                ) : (
-                    <TableList
-                        items={filtered}
-                        onQuickView={setQuickProduct}
-                        onRFQ={setRfqProduct}
-                        compare={compare}
-                        toggleCompare={toggleCompare}
-                    />
-                )}
+                ) : <GridList
+                    items={filtered}
+                    onQuickView={setQuickProduct}
+                    onRFQ={setRfqProduct}
+                    compare={compare}
+                    toggleCompare={toggleCompare}
+                />}
             </div>
 
             {/* Compare Drawer */}
@@ -198,9 +192,11 @@ export default function ProductsPage() {
             {/* RFQ Modal */}
             <AnimatePresence>
                 {!!rfqProduct && (
-                    <RFQModal product={rfqProduct} onClose={() => setRfqProduct(null)} />
+                    <RFQModal product={rfqProduct} onClose={() => setRfqProduct(null)} onBusy={setLoading} />
                 )}
             </AnimatePresence>
+
+            <LoaderOverlay show={loading} />
         </div>
     );
 }
@@ -254,8 +250,6 @@ function FilterBar({
                             placeholder="Search by name, HS code, spec…"
                         />
                         <div className="ml-auto flex items-center gap-2">
-                            <SortSelect value={sort} onChange={setSort} />
-                            <ViewToggle view={view} setView={setView} />
                             {anyActive && (
                                 <button
                                     onClick={onClearAll}
@@ -266,16 +260,7 @@ function FilterBar({
                                 </button>
                             )}
                         </div>
-                    </div>
-
-                    {/* Row 2: Categories & Origins */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <ChipGroup
-                            options={categories}
-                            value={category}
-                            onChange={(val) => setCategory(val)}
-                        />
-
+                        <SortSelect value={sort} onChange={setSort} />
                         <div className="relative" ref={popRef}>
                             <button
                                 onClick={() => setOriginsOpen((v) => !v)}
@@ -340,28 +325,6 @@ function FilterBar({
                                 )}
                             </AnimatePresence>
                         </div>
-
-                        {/* Active filters */}
-                        <div className="flex flex-wrap items-center gap-1">
-                            {category !== "All" && (
-                                <ActivePill onClear={() => setCategory("All")}>
-                                    {category}
-                                </ActivePill>
-                            )}
-                            {originFilters.map((o) => (
-                                <ActivePill
-                                    key={o}
-                                    onClear={() =>
-                                        setOriginFilters((prev) => prev.filter((x) => x !== o))
-                                    }
-                                >
-                                    {o}
-                                </ActivePill>
-                            ))}
-                            {q.trim() && (
-                                <ActivePill onClear={() => setQ("")}>“{q.trim()}”</ActivePill>
-                            )}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -369,18 +332,9 @@ function FilterBar({
     );
 }
 
-
 // ───────────────────────────────────────────────────────────────
 // Product Lists (+ animations)
 // ───────────────────────────────────────────────────────────────
-const gridParent = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.06 } },
-};
-const fadeChild = {
-    hidden: { opacity: 1, y: 1, scale: 0.99 },
-    show: { opacity: 1, y: 1, scale: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
-};
 
 const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
     return (
@@ -388,7 +342,7 @@ const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
             className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3"
         >
             {items.map((p) => (
-                <motion.div key={p.id} variants={fadeChild}>
+                <motion.div key={p.id} >
                     <ProductCard
                         product={p}
                         onQuickView={() => onQuickView(p)}
@@ -402,9 +356,10 @@ const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
     );
 };
 
+/*
 const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
     return (
-        <div className="overflow-x-auto rounded-2xl border border-neutral-200">
+        <div className="overflow-x-auto rounded-2xl border ">
             <table className="min-w-full text-sm">
                 <thead className="bg-neutral-50 text-neutral-600">
                     <tr>
@@ -420,7 +375,7 @@ const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
                     {items.map((p, i) => (
                         <tr
                             key={p.id || p.slug || i}
-                            className="border-t border-neutral-200"
+                            className="border-t  border-neutral-200"
                         >
                             <td className="px-4 py-3">
                                 <div className="flex items-center gap-3">
@@ -479,6 +434,7 @@ const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
         </div>
     );
 };
+*/
 
 const ProductCard = ({
     product,
@@ -502,7 +458,7 @@ const ProductCard = ({
 
             <div className="relative z-10 flex items-center justify-between mb-5">
                 <span className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-400 to-yellow-200 px-4 py-1.5 text-xs font-semibold text-black shadow-md">
-                    {product.category || "Gum Resins"}
+                    {product.category}
                 </span>
 
                 <label className="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer select-none text-neutral-500">
@@ -676,17 +632,6 @@ function ImageSlider({
     );
 }
 
-const ChevronLeft = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <polyline points="15 18 9 12 15 6"></polyline>
-    </svg>
-);
-const ChevronRight = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-);
-
 function QuickViewModal2({ product, onClose, onRFQ }) {
     if (!product) return null;
 
@@ -808,7 +753,7 @@ function QuickViewModal2({ product, onClose, onRFQ }) {
 // ───────────────────────────────────────────────────────────────
 // RFQ Modal (POST /api/rfq) with gradient header
 // ───────────────────────────────────────────────────────────────
-const RFQModal = ({ product, onClose }) => {
+const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
 
     const [loading, setLoading] = useState(false);
     const [ok, setOk] = useState(false);
@@ -827,6 +772,7 @@ const RFQModal = ({ product, onClose }) => {
     const submit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        onBusy(true);
         setErr("");
         try {
             const res = await fetch("/api/rfq", {
@@ -834,16 +780,24 @@ const RFQModal = ({ product, onClose }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     product: product?.slug,
+                    productId2: product?.id2,          // <-- goes to API
                     productName: product?.name,
+                    originUrl: typeof window !== "undefined" ? window.location.href : "",
                     ...form,
                 }),
             });
-            if (!res.ok) throw new Error("Failed to send request");
+
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || "Failed to send request");
+
+            // Optional: keep/show the reference ID from server
+            // json.referenceId
             setOk(true);
         } catch (error) {
             setErr(error?.message || "Something went wrong");
         } finally {
             setLoading(false);
+            onBusy(false);
         }
     };
 
@@ -1149,30 +1103,6 @@ const SearchBox = ({ value, onChange, placeholder }) => (
     </div>
 );
 
-const ChipGroup = ({ options, value, onChange, accent }) => (
-    <div className="flex flex-wrap items-center gap-1.5">
-        {options.map((opt) => {
-            const active = opt === value;
-            return (
-                <button
-                    key={opt}
-                    onClick={() => onChange(opt)}
-                    className={`rounded-2xl border px-3 py-1.5 text-sm transition ${active ? "text-neutral-900" : "text-neutral-700 hover:border-neutral-300"
-                        }`}
-                    style={{
-                        borderColor: "#e5e5e5",
-                        background: active
-                            ? `linear-gradient(90deg, ${ACCENT} 0%, #ffe88b 100%)`
-                            : "white",
-                    }}
-                >
-                    {opt}
-                </button>
-            );
-        })}
-    </div>
-);
-
 const SortSelect = ({ value, onChange }) => (
     <div className="relative">
         <select
@@ -1190,52 +1120,6 @@ const SortSelect = ({ value, onChange }) => (
     </div>
 );
 
-const ViewToggle = ({ view, setView }) => (
-    <div className="inline-flex items-center gap-1 rounded-2xl border border-neutral-200 bg-white p-1">
-        <button
-            onClick={() => setView("grid")}
-            className={`rounded-xl px-2.5 py-1.5 text-sm ${view === "grid" ? "bg-neutral-100" : ""
-                }`}
-            title="Grid view"
-        >
-            <GridIcon />
-        </button>
-        <button
-            onClick={() => setView("table")}
-            className={`rounded-xl px-2.5 py-1.5 text-sm ${view === "table" ? "bg-neutral-100" : ""
-                }`}
-            title="Table view"
-        >
-            <RowsIcon />
-        </button>
-    </div>
-);
-
-const ActivePill = ({ children, onClear }) => (
-    <span className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs">
-        {children}
-        <button
-            onClick={onClear}
-            className="ml-1 rounded-full p-1 hover:bg-neutral-200/60"
-            title="Remove"
-        >
-            <XIcon className="h-3.5 w-3.5" />
-        </button>
-    </span>
-);
-
-const IconButton = ({ children, title, onClick }) => (
-    <button
-        onClick={(e) => {
-            e.stopPropagation();
-            onClick();
-        }}
-        title={title}
-        className="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white p-2 hover:border-neutral-300"
-    >
-        {children}
-    </button>
-);
 
 // ───────────────────────────────────────────────────────────────
 // Modal (base) — responsive + gradient header + animation
@@ -1356,74 +1240,6 @@ const Select = ({ value, onChange, options = [] }) => (
             </option>
         ))}
     </select>
-);
-
-// ───────────────────────────────────────────────────────────────
-// Icons (inline SVG; no external deps)
-// ───────────────────────────────────────────────────────────────
-const SearchIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <circle cx="11" cy="11" r="7"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
-);
-const ChevronDown = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
-);
-const GridIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-    </svg>
-);
-const RowsIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <rect x="3" y="5" width="18" height="4"></rect>
-        <rect x="3" y="15" width="18" height="4"></rect>
-    </svg>
-);
-const EyeIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-);
-const MailIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <path d="M4 4h16v16H4z"></path>
-        <path d="M22 6l-9.5 7L3 6"></path>
-    </svg>
-);
-const XIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-);
-const DownloadIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <path d="M7 10l5 5 5-5"></path>
-        <path d="M12 15V3"></path>
-    </svg>
-);
-const CheckCircle = (props) => (
-    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
-);
-const GlobeIcon = (props) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2" {...props}>
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="2" y1="12" x2="22" y2="12"></line>
-        <path d="M12 2a15.3 15.3 0 0 1 0 20"></path>
-        <path d="M12 2a15.3 15.3 0 0 0 0 20"></path>
-    </svg>
 );
 
 // ───────────────────────────────────────────────────────────────

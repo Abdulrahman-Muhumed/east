@@ -17,7 +17,7 @@ export default function LoaderOverlay({ show }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="fixed inset-0 z-[70] flex items-center justify-center"
+          className="fixed inset-0 z-[70] flex items-center justify-center backdrop-blur-xs"
         >
           <div className="relative h-14 w-14">
             <div
