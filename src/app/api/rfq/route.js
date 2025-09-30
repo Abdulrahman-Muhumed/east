@@ -41,7 +41,7 @@ export async function POST(req) {
 
     // --- Email to Sales ---
     await transporter.sendMail({
-      from: `"EAST RFQ Bot" <${fromAddr}>`,
+      from: `"EAST Hides RFQ Bot" <${fromAddr}>`,
       to: salesInbox,
       subject: `RFQ — ${d.productName} (${d.product}) [${referenceId}]`,
       text: plainRFQText(d, referenceId),
@@ -51,7 +51,7 @@ export async function POST(req) {
     // --- Optional confirmation to requester ---
     if (process.env.MAIL_CONFIRM === "true") {
       await transporter.sendMail({
-        from: `"EAST Sales" <${fromAddr}>`,
+        from: `"EAST Hides Sales" <${fromAddr}>`,
         to: d.email,
         subject: `We received your RFQ — ${d.productName} [${referenceId}]`,
         text: plainConfirmText(d, referenceId),
