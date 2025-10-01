@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useDeferredValue, useCallback } from "react";
 import Image from "next/image";
 import { Link } from "../../../../../i18n/navigation"; // Hoggaan-style wrapper
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,15 +11,15 @@ import { useTranslations } from "next-intl";
 import { SearchIcon, MailIcon, XIcon, CheckCircle, EyeIcon, GlobeIcon, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import LoaderOverlay from "../../../components/blocks/LoaderOverlay";
 
-// ───────────────────────────────────────────────────────────────
-// Brand
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Brand
+─────────────────────────────────────────────────────────────── */
 const PRIMARY = brand.colors.primary; // EAST navy
-const ACCENT = brand.colors.accent; // EAST yellow
+const ACCENT = brand.colors.accent;   // EAST yellow
 
-// ───────────────────────────────────────────────────────────────
-// Page
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Page
+─────────────────────────────────────────────────────────────── */
 export default function ProductsPage() {
     const allProducts = useMemo(() => {
         try {
@@ -33,12 +33,13 @@ export default function ProductsPage() {
     // Loading indicator for list (skeletons)
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        const id = setTimeout(() => setLoading(false), 450);
+        const id = setTimeout(() => setLoading(false), 350); // slightly shorter to feel snappier
         return () => clearTimeout(id);
     }, []);
 
     // Filters (controlled)
     const [q, setQ] = useState("");
+    const dq = useDeferredValue(q); // debounced value to lighten filtering while typing
     const [category, setCategory] = useState("All");
     const [originsOpen, setOriginsOpen] = useState(false);
     const [originFilters, setOriginFilters] = useState([]);
@@ -60,10 +61,10 @@ export default function ProductsPage() {
     );
 
     const filtered = useMemo(() => {
-        let list = [...allProducts];
+        let list = allProducts;
 
-        // search
-        const needle = q.trim().toLowerCase();
+        // search (using deferred value)
+        const needle = dq.trim().toLowerCase();
         if (needle) {
             list = list.filter((p) =>
                 [p.name, p.summary, p.hsCode, p.slug, p.id2]
@@ -84,7 +85,7 @@ export default function ProductsPage() {
         }
 
         // sort
-        list.sort((a, b) => {
+        list = [...list].sort((a, b) => {
             if (sort === "alpha") return (a.name ?? "").localeCompare(b.name ?? "");
             if (sort === "moq") return (a.moqKg ?? Number.MAX_SAFE_INTEGER) - (b.moqKg ?? Number.MAX_SAFE_INTEGER);
             if (sort === "lead") return (a.leadTimeDays ?? Number.MAX_SAFE_INTEGER) - (b.leadTimeDays ?? Number.MAX_SAFE_INTEGER);
@@ -92,28 +93,27 @@ export default function ProductsPage() {
         });
 
         return list;
-    }, [allProducts, q, category, originFilters, sort]);
+    }, [allProducts, dq, category, originFilters, sort]);
 
-    const toggleCompare = (id) => {
+    const toggleCompare = useCallback((id) => {
         setCompare((prev) => {
             if (prev.includes(id)) return prev.filter((x) => x !== id);
             if (prev.length >= 3) return prev; // cap 3
             return [...prev, id];
         });
-    };
+    }, []);
 
-    const clearAll = () => {
+    const clearAll = useCallback(() => {
         setQ("");
         setCategory("All");
         setOriginFilters([]);
         setSort("alpha");
-    };
+    }, []);
 
     const t = useTranslations("Product.hero");
 
     return (
         <div className="min-h-screen bg-white text-neutral-900">
-
             <Hero
                 variant="image"
                 bgImage="/product_bg.png"
@@ -131,19 +131,15 @@ export default function ProductsPage() {
                 setQ={setQ}
                 categories={categories}
                 category={category}
-                setCategory={(val) => {
-                    // Selecting any category clears to that category; selecting "All" resets
-                    setCategory(val || "All");
-                }}
+                setCategory={(val) => setCategory(val || "All")}
                 origins={origins}
                 originFilters={originFilters}
-                setOriginFilters={(updater) => {
-                    // Ensure dedup & stable reference
+                setOriginFilters={(updater) =>
                     setOriginFilters((prev) => {
                         const next = typeof updater === "function" ? updater(prev) : updater || [];
                         return Array.from(new Set(next));
-                    });
-                }}
+                    })
+                }
                 originsOpen={originsOpen}
                 setOriginsOpen={setOriginsOpen}
                 sort={sort}
@@ -158,13 +154,15 @@ export default function ProductsPage() {
                     view === "grid" ? <SkeletonGrid /> : <SkeletonTable />
                 ) : filtered.length === 0 ? (
                     <h1 className="text-center text-neutral-500 py-12">Nothing</h1>
-                ) : <GridList
-                    items={filtered}
-                    onQuickView={setQuickProduct}
-                    onRFQ={setRfqProduct}
-                    compare={compare}
-                    toggleCompare={toggleCompare}
-                />}
+                ) : (
+                    <GridList
+                        items={filtered}
+                        onQuickView={setQuickProduct}
+                        onRFQ={setRfqProduct}
+                        compare={compare}
+                        toggleCompare={toggleCompare}
+                    />
+                )}
             </div>
 
             {/* Compare Drawer */}
@@ -282,7 +280,7 @@ function FilterBar({
                                         initial={{ opacity: 0, y: 6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 6 }}
-                                        transition={{ duration: 0.18 }}
+                                        transition={{ duration: 0.16 }}
                                         className="absolute left-0 mt-2 w-56 rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg"
                                     >
                                         <div className="max-h-64 overflow-auto pr-1">
@@ -302,9 +300,7 @@ function FilterBar({
                                                             onChange={(e) => {
                                                                 const checked = e.target.checked;
                                                                 setOriginFilters((prev) =>
-                                                                    checked
-                                                                        ? [...prev, o]
-                                                                        : prev.filter((x) => x !== o)
+                                                                    checked ? [...prev, o] : prev.filter((x) => x !== o)
                                                                 );
                                                             }}
                                                         />
@@ -332,17 +328,14 @@ function FilterBar({
     );
 }
 
-// ───────────────────────────────────────────────────────────────
-// Product Lists (+ animations)
-// ───────────────────────────────────────────────────────────────
-
-const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
+/* ───────────────────────────────────────────────────────────────
+   Product Lists (+ animations)
+─────────────────────────────────────────────────────────────── */
+const GridList = React.memo(function GridList({ items, onQuickView, onRFQ, compare, toggleCompare }) {
     return (
-        <div
-            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3"
-        >
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3">
             {items.map((p) => (
-                <motion.div key={p.id} >
+                <motion.div key={p.id} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10% 0px -10% 0px" }} transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
                     <ProductCard
                         product={p}
                         onQuickView={() => onQuickView(p)}
@@ -354,110 +347,32 @@ const GridList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
             ))}
         </div>
     );
-};
+});
 
-/*
-const TableList = ({ items, onQuickView, onRFQ, compare, toggleCompare }) => {
-    return (
-        <div className="overflow-x-auto rounded-2xl border ">
-            <table className="min-w-full text-sm">
-                <thead className="bg-neutral-50 text-neutral-600">
-                    <tr>
-                        <th className="px-4 py-3 text-left">Product</th>
-                        <th className="px-4 py-3 text-left">HS Code</th>
-                        <th className="px-4 py-3 text-left">Origin</th>
-                        <th className="px-4 py-3 text-left">MOQ</th>
-                        <th className="px-4 py-3 text-left">Lead Time</th>
-                        <th className="px-4 py-3 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items.map((p, i) => (
-                        <tr
-                            key={p.id || p.slug || i}
-                            className="border-t  border-neutral-200"
-                        >
-                            <td className="px-4 py-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="relative h-10 w-10 overflow-hidden rounded-lg ring-1 ring-neutral-200 flex-none">
-                                        <Image
-                                            src={p.images?.[0] || "/products/placeholder.jpg"}
-                                            alt={p.name}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <Link
-                                            href={`/products/${p.slug}`}
-                                            className="font-semibold hover:underline"
-                                        >
-                                            {p.name}
-                                        </Link>
-                                        <div className="text-xs text-neutral-500 line-clamp-1">
-                                            {p.summary}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-4 py-3">{p.hsCode || "-"}</td>
-                            <td className="px-4 py-3">
-                                {(p.originCountries || []).join(" • ")}
-                            </td>
-                            <td className="px-4 py-3">{p.moqKg ? `${p.moqKg} kg` : "-"}</td>
-                            <td className="px-4 py-3">
-                                {p.leadTimeDays ? `${p.leadTimeDays} d` : "-"}
-                            </td>
-                            <td className="px-4 py-3">
-                                <div className="flex items-center gap-2">
-                                    <IconButton title="Quick view" onClick={() => onQuickView(p)}>
-                                        <EyeIcon />
-                                    </IconButton>
-                                    <IconButton title="Request a quote" onClick={() => onRFQ(p)}>
-                                        <MailIcon />
-                                    </IconButton>
-                                    <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="accent-black"
-                                            checked={compare.includes(p.id)}
-                                            onChange={() => toggleCompare(p.id)}
-                                        />
-                                        Compare
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-};
-*/
-
-const ProductCard = ({
+/* Card */
+const ProductCard = React.memo(function ProductCard({
     product,
     onQuickView,
     onRFQ,
     onToggleCompare,
     isCompared,
-}) => {
+}) {
     const ACCENT2 = "#ffd028";
     const hasImages = product.images && product.images.length > 0;
 
     return (
-        <div className="group relative rounded-[2rem] border border-transparent bg-neutral-50 p-6 sm:p-7 [transform-style:preserve-3d] transition-all duration-700 hover:-translate-y-4 hover:shadow-2xl hover:border-orange-500/50">
-            {/* Inner glow */}
+        <div
+            className="group relative rounded-[2rem] border border-neutral-100 bg-neutral-50 p-6 sm:p-7 transition-all duration-500 hover:-translate-y-3 hover:shadow-xl hover:border-orange-500/40 will-change-transform"
+            style={{ contentVisibility: "auto", containIntrinsicSize: "600px 480px" }}
+        >
+            {/* Inner glow (lighter + smaller) */}
             <div
-                className="pointer-events-none absolute -inset-20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-60"
-                style={{
-                    background: `radial-gradient(circle at 50% 50%, ${ACCENT2}88 0%, transparent 70%)`,
-                }}
+                className="pointer-events-none absolute -inset-14 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-50"
+                style={{ background: `radial-gradient(circle at 50% 50%, ${ACCENT2}55 0%, transparent 70%)` }}
             />
 
             <div className="relative z-10 flex items-center justify-between mb-5">
-                <span className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-400 to-yellow-200 px-4 py-1.5 text-xs font-semibold text-black shadow-md">
+                <span className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-400 to-yellow-200 px-4 py-1.5 text-xs font-semibold text-black shadow">
                     {product.category}
                 </span>
 
@@ -489,10 +404,7 @@ const ProductCard = ({
 
             {/* Content */}
             <div className="mt-6 space-y-3">
-                <Link
-                    href={`/products/${product.slug}`}
-                    className="text-xl sm:text-2xl font-bold leading-snug text-neutral-950 hover:underline"
-                >
+                <Link href={`/products/${product.slug}`} className="text-xl sm:text-2xl font-bold leading-snug text-neutral-950 hover:underline">
                     {product.name}
                 </Link>
                 <p className="text-sm text-neutral-600 line-clamp-2">{product.summary}</p>
@@ -505,10 +417,8 @@ const ProductCard = ({
                         e.stopPropagation();
                         onRFQ();
                     }}
-                    className="relative flex-1 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/40"
-                    style={{
-                        background: "linear-gradient(90deg, #0b2a6b 0%, #ffd028 100%)",
-                    }}
+                    className="relative flex-1 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition-transform duration-200 hover:scale-[1.03]"
+                    style={{ background: "linear-gradient(90deg, #0b2a6b 0%, #ffd028 100%)" }}
                 >
                     <MailIcon className="w-4 h-4" />
                     <span className="relative z-10">Request</span>
@@ -519,16 +429,16 @@ const ProductCard = ({
                         e.stopPropagation();
                         onQuickView();
                     }}
-                    className="relative flex-none inline-flex items-center justify-center gap-2 rounded-full w-12 h-12 border-2 border-neutral-200 bg-neutral-100 text-neutral-700 transition-all duration-300 hover:scale-110 hover:border-yellow-500 hover:text-black"
+                    className="relative flex-none inline-flex items-center justify-center gap-2 rounded-full w-12 h-12 border-2 border-neutral-200 bg-neutral-100 text-neutral-700 transition-transform duration-200 hover:scale-105 hover:border-yellow-500 hover:text-black"
                 >
                     <EyeIcon className="w-5 h-5" />
                 </button>
             </div>
         </div>
     );
-};
+});
 
-function ImageSlider({
+const ImageSlider = React.memo(function ImageSlider({
     images = [],
     name,
     className = "h-48",
@@ -545,15 +455,12 @@ function ImageSlider({
     useEffect(() => {
         if (!auto || safe.length <= 1) return;
         if (pauseOnHover && hover) return;
-        const id = setInterval(
-            () => setIdx((i) => (i + 1) % safe.length),
-            Math.max(800, intervalMs)
-        );
+        const id = setInterval(() => setIdx((i) => (i + 1) % safe.length), Math.max(1100, intervalMs));
         return () => clearInterval(id);
     }, [auto, pauseOnHover, hover, safe.length, intervalMs]);
 
-    const prev = () => setIdx((i) => (i - 1 + safe.length) % safe.length);
-    const next = () => setIdx((i) => (i + 1) % safe.length);
+    const prev = useCallback(() => setIdx((i) => (i - 1 + safe.length) % safe.length), [safe.length]);
+    const next = useCallback(() => setIdx((i) => (i + 1) % safe.length), [safe.length]);
 
     // touch swipe
     const onTouchStart = (e) => (startX.current = e.touches[0].clientX);
@@ -572,12 +479,12 @@ function ImageSlider({
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
         >
-            {/* slides */}
+            {/* slides (opacity swap, reduced duration) */}
             {safe.map((src, i) => (
                 <div
                     key={`${src}-${i}`}
-                    className="absolute inset-0 transition-opacity duration-500"
-                    style={{ opacity: i === idx ? 1 : 0 }}
+                    className="absolute inset-0 transition-opacity duration-400"
+                    style={{ opacity: i === idx ? 1 : 0, willChange: "opacity" }}
                     aria-hidden={i !== idx}
                 >
                     <Image
@@ -585,8 +492,8 @@ function ImageSlider({
                         alt={name || "Product image"}
                         fill
                         className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         priority={false}
-                        sizes="(max-width: 768px) 100vw, 33vw"
                     />
                 </div>
             ))}
@@ -599,14 +506,14 @@ function ImageSlider({
                 <>
                     <button
                         onClick={prev}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/80 backdrop-blur border border-neutral-200 shadow hover:bg-white transition"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm border border-neutral-200 shadow hover:bg-white transition"
                         aria-label="Previous image"
                     >
                         <ChevronLeft />
                     </button>
                     <button
                         onClick={next}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/80 backdrop-blur border border-neutral-200 shadow hover:bg-white transition"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm border border-neutral-200 shadow hover:bg-white transition"
                         aria-label="Next image"
                     >
                         <ChevronRight />
@@ -621,8 +528,7 @@ function ImageSlider({
                         <button
                             key={`dot-${i}`}
                             onClick={() => setIdx(i)}
-                            className={`h-1.5 rounded-full transition-all ${i === idx ? "w-4 bg-neutral-900" : "w-1.5 bg-white/70 border border-neutral-300"
-                                }`}
+                            className={`h-1.5 rounded-full transition-all ${i === idx ? "w-4 bg-neutral-900" : "w-1.5 bg-white/70 border border-neutral-300"}`}
                             aria-label={`Go to image ${i + 1}`}
                         />
                     ))}
@@ -630,8 +536,9 @@ function ImageSlider({
             )}
         </div>
     );
-}
+});
 
+/* Quick View */
 function QuickViewModal2({ product, onClose, onRFQ }) {
     if (!product) return null;
 
@@ -669,7 +576,6 @@ function QuickViewModal2({ product, onClose, onRFQ }) {
                                     <div className="HighlightCard__glow" />
                                     <div className="flex items-start gap-3">
                                         <div className="IconDot">
-                                            {/* simple icon dot */}
                                             <span className="w-2 h-2 rounded-full bg-white block" />
                                         </div>
                                         <div className="min-w-0">
@@ -696,65 +602,44 @@ function QuickViewModal2({ product, onClose, onRFQ }) {
                 </div>
             </div>
 
-            {/* Scoped styles */}
+            {/* Scoped styles (kept; eased) */}
             <style jsx>{`
-        /* Entrances */
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up { animation: slideUp .5s ease-out both; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: translateY(0);} }
+        .animate-slide-up { animation: slideUp .45s ease-out both; }
 
-        /* Highlight cards */
         .HighlightCard {
-          position: relative;
-          border: 1px solid #eeeeee;
-          border-radius: 1rem;
-          background: #fff;
-          padding: .9rem .95rem;
-          transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
-          box-shadow: 0 12px 36px -22px rgba(0,0,0,.2);
+          position: relative; border: 1px solid #eeeeee; border-radius: 1rem; background: #fff;
+          padding: .9rem .95rem; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+          box-shadow: 0 10px 28px -20px rgba(0,0,0,.18);
         }
-        .HighlightCard:hover { transform: translateY(-2px); border-color: #e3e3e3; box-shadow: 0 20px 56px -26px rgba(0,0,0,.26); }
-        .HighlightCard__bar {
-          content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;
-          background: linear-gradient(90deg, ${PRIMARY} 0%, ${ACCENT} 100%);
-          opacity: .95;
-        }
-        .HighlightCard__glow {
-          content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-          background: radial-gradient(240px 120px at 20% 0%, rgba(255,255,255,.12), transparent 60%);
-          transition: opacity .35s ease;
-        }
-        .HighlightCard:hover .HighlightCard__glow { opacity: 1; }
+        .HighlightCard:hover { transform: translateY(-2px); border-color: #e3e3e3; box-shadow: 0 18px 46px -26px rgba(0,0,0,.22); }
+        .HighlightCard__bar { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; border-top-left-radius:1rem; border-bottom-left-radius:1rem;
+          background: linear-gradient(90deg, ${PRIMARY} 0%, ${ACCENT} 100%); opacity:.95;}
+        .HighlightCard__glow { content:""; position:absolute; inset:0; pointer-events:none; opacity:0;
+          background: radial-gradient(240px 120px at 20% 0%, rgba(255,255,255,.12), transparent 60%); transition: opacity .3s ease;}
+        .HighlightCard:hover .HighlightCard__glow { opacity:1; }
 
-        .IconDot {
-          display: grid; place-items: center;
-          width: 28px; height: 28px; border-radius: .65rem; color: #fff;
-          background: linear-gradient(90deg, ${PRIMARY} 0%, ${ACCENT} 100%);
-          box-shadow: 0 10px 26px -20px rgba(0,0,0,.35);
-          flex-shrink: 0;
-        }
-        .Label { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
-        .Value { font-size: .96rem; font-weight: 700; color: #0f172a; }
+        .IconDot { display:grid; place-items:center; width:28px; height:28px; border-radius:.65rem; color:#fff;
+          background: linear-gradient(90deg, ${PRIMARY} 0%, ${ACCENT} 100%); box-shadow: 0 10px 26px -20px rgba(0,0,0,.3); flex-shrink:0; }
+        .Label { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; }
+        .Value { font-size:.96rem; font-weight:700; color:#0f172a; }
 
-        /* Buttons */
-        .BtnGhost { border: 1px solid #e5e5e5; padding: .6rem .95rem; border-radius: .9rem; background: #fff; font-weight: 600; transition: transform .15s, box-shadow .15s, border-color .15s; }
-        .BtnGhost:hover { transform: translateY(-1px); border-color: #dcdcdc; box-shadow: 0 10px 20px -14px rgba(0,0,0,.22); }
-        .BtnPrimary { position: relative; padding: .65rem 1rem; border-radius: .9rem; font-weight: 800; color: #ffffff; background: linear-gradient(90deg, ${PRIMARY} 0%, ${PRIMARY} 100%); box-shadow: 0 12px 28px -18px rgba(0,0,0,.35); transition: transform .15s, filter .15s; }
+        .BtnGhost { border:1px solid #e5e5e5; padding:.6rem .95rem; border-radius:.9rem; background:#fff; font-weight:600; transition: transform .15s, box-shadow .15s, border-color .15s; }
+        .BtnGhost:hover { transform: translateY(-1px); border-color:#dcdcdc; box-shadow:0 10px 20px -14px rgba(0,0,0,.18); }
+        .BtnPrimary { position:relative; padding:.65rem 1rem; border-radius:.9rem; font-weight:800; color:#ffffff;
+          background: linear-gradient(90deg, ${PRIMARY} 0%, ${PRIMARY} 100%); box-shadow: 0 12px 28px -18px rgba(0,0,0,.3); transition: transform .15s, filter .15s; }
         .BtnPrimary:hover { transform: translateY(-1px); filter: brightness(1.03); }
-        .BtnSoft { border: 1px solid #eaeaea; background: #fbfbfb; padding: .6rem .95rem; border-radius: .9rem; font-weight: 700; transition: transform .15s, box-shadow .15s, border-color .15s, background .15s; }
-        .BtnSoft:hover { transform: translateY(-1px); border-color: #dedede; background: #fff; box-shadow: 0 10px 20px -14px rgba(0,0,0,.18); }
+        .BtnSoft { border:1px solid #eaeaea; background:#fbfbfb; padding:.6rem .95rem; border-radius:.9rem; font-weight:700; transition: transform .15s, box-shadow .15s, border-color .15s, background .15s; }
+        .BtnSoft:hover { transform: translateY(-1px); border-color:#dedede; background:#fff; box-shadow: 0 10px 20px -14px rgba(0,0,0,.16); }
       `}</style>
         </Modal>
     );
 }
 
-// ───────────────────────────────────────────────────────────────
-// RFQ Modal (POST /api/rfq) with gradient header
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   RFQ Modal (POST /api/rfq)
+─────────────────────────────────────────────────────────────── */
 const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
-
     const [loading, setLoading] = useState(false);
     const [ok, setOk] = useState(false);
     const [err, setErr] = useState("");
@@ -780,7 +665,7 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     product: product?.slug,
-                    productId2: product?.id2,          // <-- goes to API
+                    productId2: product?.id2,
                     productName: product?.name,
                     originUrl: typeof window !== "undefined" ? window.location.href : "",
                     ...form,
@@ -790,8 +675,6 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
             const json = await res.json();
             if (!res.ok) throw new Error(json?.error || "Failed to send request");
 
-            // Optional: keep/show the reference ID from server
-            // json.referenceId
             setOk(true);
         } catch (error) {
             setErr(error?.message || "Something went wrong");
@@ -823,9 +706,7 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                             <Field label="Contact name" required>
                                 <input
                                     value={form.contactName}
-                                    onChange={(e) =>
-                                        setForm({ ...form, contactName: e.target.value })
-                                    }
+                                    onChange={(e) => setForm({ ...form, contactName: e.target.value })}
                                     className="Input"
                                 />
                             </Field>
@@ -840,36 +721,28 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                             <Field label="Destination port/city">
                                 <input
                                     value={form.destination}
-                                    onChange={(e) =>
-                                        setForm({ ...form, destination: e.target.value })
-                                    }
+                                    onChange={(e) => setForm({ ...form, destination: e.target.value })}
                                     className="Input"
                                 />
                             </Field>
                             <Field label="Quantity" required>
                                 <input
                                     value={form.quantity}
-                                    onChange={(e) =>
-                                        setForm({ ...form, quantity: e.target.value })
-                                    }
+                                    onChange={(e) => setForm({ ...form, quantity: e.target.value })}
                                     className="Input"
                                 />
                             </Field>
                             <Field label="Unit">
                                 <Select
                                     value={form.unit}
-                                    onChange={(e) =>
-                                        setForm({ ...form, unit: e.target.value })
-                                    }
+                                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
                                     options={["kg", "ton"]}
                                 />
                             </Field>
                             <Field label="Incoterm">
                                 <Select
                                     value={form.incoterm}
-                                    onChange={(e) =>
-                                        setForm({ ...form, incoterm: e.target.value })
-                                    }
+                                    onChange={(e) => setForm({ ...form, incoterm: e.target.value })}
                                     options={["FOB", "CFR", "CIF", "EXW"]}
                                 />
                             </Field>
@@ -878,9 +751,7 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                                     <textarea
                                         rows={4}
                                         value={form.message}
-                                        onChange={(e) =>
-                                            setForm({ ...form, message: e.target.value })
-                                        }
+                                        onChange={(e) => setForm({ ...form, message: e.target.value })}
                                         className="Input"
                                     />
                                 </Field>
@@ -888,11 +759,7 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 pt-3">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="BtnSecondary w-full sm:w-auto"
-                            >
+                            <button type="button" onClick={onClose} className="BtnSecondary w-full sm:w-auto">
                                 Cancel
                             </button>
                             <button disabled={loading} className="BtnPrimary w-full sm:w-auto">
@@ -903,42 +770,16 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
 
                     <style jsx>{`
             .Input {
-              width: 100%;
-              border-radius: 0.75rem;
-              border: 1px solid #e5e5e5;
-              background: white;
-              padding: 0.6rem 0.8rem;
-              transition: box-shadow 0.15s ease, border-color 0.15s ease;
+              width: 100%; border-radius: 0.75rem; border: 1px solid #e5e5e5; background: white;
+              padding: 0.6rem 0.8rem; transition: box-shadow 0.15s ease, border-color 0.15s ease;
             }
-            .Input:focus {
-              outline: none;
-              border-color: ${ACCENT};
-              box-shadow: 0 0 0 3px rgba(255, 208, 40, 0.25);
-            }
-            .BtnSecondary {
-              border: 1px solid #e5e5e5;
-              padding: 0.5rem 0.9rem;
-              border-radius: 0.75rem;
-              background: white;
-            }
-            .BtnPrimary {
-              position: relative;
-              padding: 0.5rem 0.9rem;
-              border-radius: 0.75rem;
-              font-weight: 600;
-              color: #111;
-              transition: transform 0.15s ease;
-              overflow: hidden;
-              isolation: isolate;
-            }
+            .Input:focus { outline: none; border-color: ${ACCENT}; box-shadow: 0 0 0 3px rgba(255, 208, 40, 0.25); }
+            .BtnSecondary { border: 1px solid #e5e5e5; padding: 0.5rem 0.9rem; border-radius: 0.75rem; background: white; }
+            .BtnPrimary { position: relative; padding: 0.5rem 0.9rem; border-radius: 0.75rem; font-weight: 600; color: #111;
+              transition: transform 0.15s ease; overflow: hidden; isolation: isolate; }
             .BtnPrimary::before {
-              content: "";
-              position: absolute;
-              inset: 0;
-              border-radius: 0.75rem;
-              background: linear-gradient(90deg, ${ACCENT} 0%, #ffe88b 100%);
-              box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.35);
-              z-index: -1;
+              content: ""; position: absolute; inset: 0; border-radius: 0.75rem;
+              background: linear-gradient(90deg, ${ACCENT} 0%, #ffe88b 100%); box-shadow: 0 10px 24px -16px rgba(0,0,0,.28); z-index: -1;
             }
           `}</style>
                 </form>
@@ -947,18 +788,16 @@ const RFQModal = ({ product, onClose, onBusy = () => { } }) => {
                     <CheckCircle className="h-10 w-10 text-green-600" />
                     <div className="text-lg font-semibold">Request sent</div>
                     <div className="text-sm text-neutral-600">We’ll get back to you shortly.</div>
-                    <button onClick={onClose} className="mt-2 BtnSecondary">
-                        Close
-                    </button>
+                    <button onClick={onClose} className="mt-2 BtnSecondary">Close</button>
                 </div>
             )}
         </Modal>
     );
 };
 
-// ───────────────────────────────────────────────────────────────
-// Compare Drawer (Open link kept; matches requirement)
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Compare Drawer (unchanged structure, mobile-safe controls)
+─────────────────────────────────────────────────────────────── */
 const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
     const items = compare
         .map((id) => products.find((p) => p.id === id))
@@ -974,22 +813,35 @@ const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
                 open ? "translate-y-0 opacity-100 pointer-events-auto" : "translate-y-full opacity-0 pointer-events-none",
             ].join(" ")}
             aria-hidden={!open}
+            role="dialog"
+            aria-modal="true"
         >
-            <div className="mx-auto max-w-6xl rounded-t-3xl border border-neutral-200 bg-white/80 backdrop-blur-md shadow-[0_-12px_40px_-12px_rgba(0,0,0,.25)]">
+            <div className="mx-2 sm:mx-auto w-auto max-w-full sm:max-w-6xl rounded-t-3xl border border-neutral-200 bg-white/80 backdrop-blur-md shadow-[0_-12px_40px_-12px_rgba(0,0,0,.25)] pb-[env(safe-area-inset-bottom)]">
                 {/* Header */}
-                <div className="px-4 sm:px-6 pt-4">
-                    <div className="flex items-center justify-between">
-                        <div className="inline-flex items-center gap-2">
+                <div className="px-3 sm:px-6 pt-4">
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="inline-flex items-center gap-2 min-w-0">
                             <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold ring-1 ring-neutral-200 shadow-sm">
                                 <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} />
-                                Compare
+                                <span className="whitespace-nowrap">Compare</span>
                                 <span className="text-neutral-500">({items.length}/3)</span>
                             </span>
                         </div>
-                        <div className="flex items-center gap-2">
+
+                        {/* Right controls: mobile Close (X) + Clear */}
+                        <div className="flex items-center gap-2 pr-[env(safe-area-inset-right)]">
                             <button
                                 onClick={onClear}
-                                className="rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
+                                className="inline-flex sm:hidden h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+                                title="Close"
+                                aria-label="Close compare"
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </button>
+
+                            <button
+                                onClick={onClear}
+                                className="hidden sm:inline-flex rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
                                 title="Clear all"
                             >
                                 Clear
@@ -999,34 +851,32 @@ const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
 
                     {/* Progress */}
                     <div className="mt-3 h-1.5 w-full rounded-full bg-neutral-200/70 overflow-hidden">
-                        <div
-                            className="h-full rounded-full transition-all"
-                            style={{ width: `${progress}%`, background: ACCENT }}
-                        />
+                        <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: ACCENT }} />
                     </div>
                 </div>
 
                 {/* Cards rail */}
-                <div className="px-3 sm:px-5 pb-4 pt-3">
-                    <div className="grid grid-flow-col auto-cols-[82%] sm:auto-cols-[48%] md:auto-cols-[32%] gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                <div className="px-2 sm:px-5 pb-4 pt-3">
+                    <div className="grid grid-flow-col auto-cols-[88%] xs:auto-cols-[82%] sm:auto-cols-[52%] md:auto-cols-[38%] lg:auto-cols-[32%] gap-3 sm:gap-4 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scrollbar-hide touch-pan-x -mx-2 px-2 sm:mx-0 sm:px-0">
                         {items.map((p) => (
                             <article
                                 key={p.id}
-                                className="group relative snap-start rounded-2xl bg-white ring-1 ring-neutral-200 shadow-md hover:shadow-lg transition"
+                                className="group relative snap-start rounded-2xl bg-white ring-1 ring-neutral-200 shadow-md hover:shadow-lg transition min-w-0"
+                                style={{ contentVisibility: "auto", containIntrinsicSize: "360px 320px" }}
                             >
-                                {/* remove */}
+                                {/* per-card remove — keep fully visible */}
                                 <button
                                     onClick={() => onCloseItem(p.id)}
                                     className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-neutral-600 ring-1 ring-neutral-200 hover:bg-white"
                                     title="Remove"
+                                    aria-label={`Remove ${p.name}`}
                                 >
                                     <XIcon className="h-4 w-4" />
                                 </button>
 
-
                                 {/* body */}
                                 <div className="p-3 sm:p-4">
-                                    <Link href={`/products/${p.slug}`} className="block font-semibold leading-tight line-clamp-2 hover:underline">
+                                    <Link href={`/products/${p.slug}`} className="block font-semibold leading-tight line-clamp-2 hover:underline break-words">
                                         {p.name}
                                     </Link>
 
@@ -1039,14 +889,11 @@ const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
                                     </div>
 
                                     {/* footer actions */}
-                                    <div className="mt-3 flex items-center justify-between">
-                                        <Link
-                                            href={`/products/${p.slug}`}
-                                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900"
-                                        >
+                                    <div className="mt-3 flex items-center justify-between gap-2">
+                                        <Link href={`/products/${p.slug}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 shrink-0">
                                             Open <ArrowRight className="h-4 w-4" />
                                         </Link>
-                                        <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
+                                        <span className="inline-flex items-center gap-1 text-xs text-neutral-500 min-w-0 truncate">
                                             {firstKeySpec(p)}
                                         </span>
                                     </div>
@@ -1055,7 +902,7 @@ const CompareDrawer = ({ products, compare, onCloseItem, onClear }) => {
                         ))}
                     </div>
 
-                    {/* Empty (rarely seen because drawer is hidden when empty) */}
+                    {/* Empty */}
                     {!items.length && (
                         <div className="py-10 text-center text-neutral-500 text-sm">Select up to 3 products to compare</div>
                     )}
@@ -1069,7 +916,7 @@ function firstKeySpec(p) {
     if (!p?.specs) return "—";
     const k = Object.keys(p.specs)[0];
     if (!k) return "—";
-    return `${pretty(k)}: ${String((p.specs)[k])}`;
+    return `${pretty(k)}: ${String(p.specs[k])}`;
 }
 function pretty(k) {
     return k.replace(/[_\-]/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\b(\w)/g, (c) => c.toUpperCase());
@@ -1086,9 +933,9 @@ const Chip = ({ label }) => (
     </span>
 );
 
-// ───────────────────────────────────────────────────────────────
-// Shared UI bits
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Shared UI bits
+─────────────────────────────────────────────────────────────── */
 const SearchBox = ({ value, onChange, placeholder }) => (
     <div className="relative flex-1 min-w-[240px] max-w-xl">
         <input
@@ -1120,10 +967,9 @@ const SortSelect = ({ value, onChange }) => (
     </div>
 );
 
-
-// ───────────────────────────────────────────────────────────────
-// Modal (base) — responsive + gradient header + animation
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Modal (base) — responsive + gradient header + animation
+─────────────────────────────────────────────────────────────── */
 const Modal = ({ children, onClose, title, right }) => {
     useEffect(() => {
         const onKey = (e) => e.key === "Escape" && onClose();
@@ -1142,10 +988,10 @@ const Modal = ({ children, onClose, title, right }) => {
             />
             <div className="absolute inset-0 grid place-items-center p-3 sm:p-4">
                 <motion.div
-                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 18, scale: 0.985 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.985 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full max-w-3xl overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-2xl"
                     role="dialog"
                     aria-modal="true"
@@ -1155,7 +1001,7 @@ const Modal = ({ children, onClose, title, right }) => {
                     <div
                         className="flex items-center justify-between px-3 sm:px-5 py-3"
                         style={{
-                            background: `linear-gradient(135deg, ${PRIMARY} 0%, rgba(11,42,107,0.85) 35%, ${ACCENT} 100%)`,
+                            background: `linear-gradient(135deg, ${PRIMARY} 0%, rgba(11,42,107,0.88) 35%, ${ACCENT} 100%)`,
                             color: "#fff",
                         }}
                     >
@@ -1181,47 +1027,44 @@ const Modal = ({ children, onClose, title, right }) => {
                     </div>
 
                     {/* Body — scrollable on small screens */}
-                    <div className="max-h-[85vh] overflow-y-auto p-4 sm:p-6">
-                        {children}
-                    </div>
+                    <div className="max-h-[85vh] overflow-y-auto p-4 sm:p-6">{children}</div>
                 </motion.div>
             </div>
         </div>
     );
 };
 
-// ───────────────────────────────────────────────────────────────
-// Gallery
-// ───────────────────────────────────────────────────────────────
-const Gallery = ({ images = [], name }) => {
+/* ───────────────────────────────────────────────────────────────
+   Gallery
+─────────────────────────────────────────────────────────────── */
+const Gallery = React.memo(function Gallery({ images = [], name }) {
     const [idx, setIdx] = useState(0);
-    const shown = images[idx] || "/products/placeholder.jpg";
+    const shown = images?.[idx] || "/products/placeholder.jpg";
     return (
         <div>
             <div className="relative h-full w-full overflow-hidden rounded-2xl ring-1 ring-neutral-200">
-                <Image src={shown} alt={name} fill className="object-cover" />
+                <Image src={shown} alt={name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
             </div>
-            {images.length > 1 && (
+            {images?.length > 1 && (
                 <div className="mt-3 flex items-center gap-2">
                     {images.map((src, i) => (
                         <button
                             key={src + i}
                             onClick={() => setIdx(i)}
-                            className={`relative h-14 w-14 overflow-hidden rounded-xl ring-1 ring-neutral-200 ${i === idx ? "outline outline-neutral-900" : ""
-                                }`}
+                            className={`relative h-14 w-14 overflow-hidden rounded-xl ring-1 ring-neutral-200 ${i === idx ? "outline outline-neutral-900" : ""}`}
                         >
-                            <Image src={src} alt={`${name} ${i + 1}`} fill className="object-cover" />
+                            <Image src={src} alt={`${name} ${i + 1}`} fill className="object-cover" loading="lazy" sizes="56px" />
                         </button>
                     ))}
                 </div>
             )}
         </div>
     );
-};
+});
 
-// ───────────────────────────────────────────────────────────────
-// Form bits
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Form bits
+─────────────────────────────────────────────────────────────── */
 const Field = ({ label, children, required }) => (
     <label className="grid gap-1 text-sm">
         <span className="text-neutral-700">
@@ -1242,9 +1085,9 @@ const Select = ({ value, onChange, options = [] }) => (
     </select>
 );
 
-// ───────────────────────────────────────────────────────────────
-// Skeletons (loading indicator)
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Skeletons (loading indicator)
+─────────────────────────────────────────────────────────────── */
 const SkeletonGrid = () => (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -1268,7 +1111,9 @@ const SkeletonTable = () => (
             <thead className="bg-neutral-50">
                 <tr>
                     {["Product", "HS Code", "Origin", "MOQ", "Lead Time", "Actions"].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left">{h}</th>
+                        <th key={h} className="px-4 py-3 text-left">
+                            {h}
+                        </th>
                     ))}
                 </tr>
             </thead>
@@ -1287,9 +1132,9 @@ const SkeletonTable = () => (
     </div>
 );
 
-// ───────────────────────────────────────────────────────────────
-// Utils
-// ───────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────────────
+   Utils
+─────────────────────────────────────────────────────────────── */
 function uniq(arr) {
     return Array.from(new Set(arr.filter(Boolean)));
 }
