@@ -16,7 +16,11 @@ export const dynamic = 'force-dynamic';
 export default async function LocaleLayout({ children, params }) {
   const { locale } = await params || {};
 
+
+  notFound();
+
   if (!locale || !routing.locales.includes(locale)) notFound();
+  
 
   let messages;
   try {
@@ -28,7 +32,6 @@ export default async function LocaleLayout({ children, params }) {
   return (
     <NextIntlClientProvider messages={messages} locale={locale} timeZone="Africa/Mogadishu">
       <ClientRouteLoader locale={locale}>
-
         <div
           aria-hidden
           className="fixed inset-0  pointer-events-none"
